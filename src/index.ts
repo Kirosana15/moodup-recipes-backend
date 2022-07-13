@@ -23,11 +23,12 @@ app.use(morgan('tiny'));
 app.use(express.static('public'));
 
 //database connection
-mongoose.connect(DB_URI).then(() => {
+try {
+    mongoose.connect(DB_URI)
     console.log('Connected to MongoDB');
-}).catch((err) => {
+} catch(err) {
     console.log(err);
-});
+}
 
 //swagger setup
 const swaggerOptions = {
