@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv\config';
 import express, { Application } from 'express';
 import morgan from 'morgan';
 import swaggerJsDoc from 'swagger-jsdoc';
@@ -16,12 +16,6 @@ const PORT = process.env.PORT || 300;
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/test';
 
 const app: Application = express();
-
-/*
-    admin info:
-    username: admin
-    password: admin
-*/
 
 //adding middleware
 app.use(express.json());
