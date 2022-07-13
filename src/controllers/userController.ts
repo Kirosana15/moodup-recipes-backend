@@ -1,7 +1,7 @@
 //Controller for user authentication
-require('dotenv').config();
+import 'dotenv/config';
 import UserService from '../services/userService';
-const jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
