@@ -1,6 +1,6 @@
 //Service for database operations on the "recipes" collection
 
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { IRecipe } from '../models/recipeModel';
 const Recipe = mongoose.model<IRecipe>('Recipe');
 
@@ -9,21 +9,17 @@ class RecipeService {
     const recipe = new Recipe({ ownerId, title, body });
     return recipe.save();
   }
-  public getRecipe(id: ObjectId) {
+  public getRecipe(id: string) {
     return Recipe.findById(id, '_id ownerId title body created').exec();
   }
-  public getAllRecipes(page: number = 1, limit: number = 10) {
+  public getAllRecipes(page = 1, limit = 10) {
     return Recipe.find({}, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ created: -1 })
       .exec();
   }
-  public getRecipesByOwner(
-    ownerId: ObjectId,
-    page: number = 1,
-    limit: number = 10
-  ) {
+  public getRecipesByOwner(ownerId: string, page = 1, limit = 10) {
     return Recipe.find({ ownerId: ownerId }, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)
@@ -37,11 +33,7 @@ class RecipeService {
     return Recipe.findByIdAndRemove(id).exec();
   }
   // case insensitive partial text search on title
-  public getRecipesByTitle(
-    title: string,
-    page: number = 1,
-    limit: number = 10
-  ) {
+  public getRecipesByTitle(title: string, page = 1, limit = 10) {
     return Recipe.find(
       { title: { $regex: title, $options: 'i' } },
       '_id ownerId title body created'

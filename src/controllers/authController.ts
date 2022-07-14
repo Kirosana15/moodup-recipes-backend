@@ -1,13 +1,22 @@
 import 'dotenv/config';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import Express from 'express';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
+
+export interface TypedRequest<T> extends Express.Request {
+  user: T;
+}
 
 // AuthController is a middleware class that handles user authentication
 
 class AuthController {
   // authorizeUser verifies the user's token and fills the req.user object with the user's data
-  public async authorizeUser(req: any, res: any, next: any) {
+  public async authorizeUser(
+    req: TypedRequest<unknown>,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) {
     const token = req.headers.authorization;
     if (token) {
       try {
@@ -22,7 +31,11 @@ class AuthController {
     }
   }
   // authorizeAdmin checks if the user is an admin
-  public async authorizeAdmin(req: any, res: any, next: any) {
+  public async authorizeAdmin(
+    req: TypedRequest<{ isAdmin: boolean }>,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) {
     if (req.user.isAdmin) {
       next();
     } else {
