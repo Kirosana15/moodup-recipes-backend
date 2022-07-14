@@ -79,6 +79,7 @@ class RecipeController {
             }
         } catch(err) {
             console.log(err)
+            res.status(400)
         }
     }
     // Returns a list of recipes satisfying the search query in the title
