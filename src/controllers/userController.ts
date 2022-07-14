@@ -36,7 +36,7 @@ class UserController {
                 const user:any = await userService.getUser(req.body.username);
                 if (user) {
                         try {
-                            const isValid = user.comparePassword(req.body.password);
+                            const isValid = await user.comparePassword(req.body.password);
                             if (isValid) {
                                 req.user = user;
                                 next();
@@ -70,7 +70,7 @@ class UserController {
     //Provides a list of all users
     public async getAllUsers(req: any, res: any) {
         try {
-            const users = userService.getAllUsers(req.query.page, req.query.limit);
+            const users = await userService.getAllUsers(req.query.page, req.query.limit);
             res.status(200).send(users);
         } catch(err) {
             res.status(400).send(err);
