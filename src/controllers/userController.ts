@@ -3,15 +3,23 @@ import "dotenv/config";
 import UserService from "../services/userService";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import Express from "express";
+import { Query } from "express-serve-static-core";
 
 const TOKEN_KEY = process.env.TOKEN_KEY || "secret";
 const userService = new UserService();
+
+export interface TypedRequest<T extends Query, U, V> extends Express.Request {
+  query: T;
+  body: U;
+  user: V;
+}
 
 //UserController class for user related requests
 class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
-  public async register(req: any, res: any) {
+  public async register(req: Express.Request, res: Express.Response) {
     if (req.body.password && req.body.username) {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
       try {
@@ -32,7 +40,15 @@ class UserController {
     }
   }
   //Authenticate a user with provided username and password
-  public async login(req: any, res: any, next: any) {
+  public async login(
+    req: TypedRequest<
+      { page: string },
+      { password: string; username: string },
+      unknown
+    >,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) {
     if (req.body.password && req.body.username) {
       try {
         const user: any = await userService.getUser(req.body.username);
@@ -61,7 +77,10 @@ class UserController {
   }
 
   //Provides logged in user data to the client
-  public getProfile(req: any, res: any) {
+  public getProfile(
+    req: TypedRequest<{ page: string }, unknown, unknown>,
+    res: Express.Response
+  ) {
     if (req.user) {
       res.status(200).send(req.user);
     } else {
@@ -70,11 +89,14 @@ class UserController {
   }
 
   //Provides a list of all users
-  public async getAllUsers(req: any, res: any) {
+  public async getAllUsers(
+    req: TypedRequest<{ page: string; limit: string }, unknown, unknown>,
+    res: Express.Response
+  ) {
     try {
       const users = await userService.getAllUsers(
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(users);
     } catch (err) {
@@ -83,7 +105,7 @@ class UserController {
   }
 
   //Provides data of a user with provided id
-  public async getUser(req: any, res: any) {
+  public async getUser(req: Express.Request, res: Express.Response) {
     try {
       const user = await userService.getUser(req.params.id);
       if (user) {
@@ -97,7 +119,7 @@ class UserController {
   }
 
   //Deletes a user with provided id
-  public async removeUser(req: any, res: any) {
+  public async removeUser(req: Express.Request, res: Express.Response) {
     try {
       const user = await userService.removeUser(req.params.id);
       if (user) {
@@ -111,10 +133,14 @@ class UserController {
   }
 
   //Validates a refresh token and fetches user data if valid
-  public async refreshToken(req: any, res: any, next: any) {
+  public async refreshToken(
+    req: TypedRequest<Query, unknown, unknown>,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) {
     const token = req.headers.authorization;
     if (token) {
-      jwt.verify(token, TOKEN_KEY, async (err: any, decoded: any) => {
+      jwt.verify(token, TOKEN_KEY, async (err, decoded: any) => {
         if (err) {
           res.status(401).send(err);
         } else {
@@ -142,7 +168,14 @@ class UserController {
 
   //Generates a new set of tokens for the user
   //New refresh token is stored and old one is invalidated
-  public async generateToken(req: any, res: any) {
+  public async generateToken(
+    req: TypedRequest<
+      Query,
+      unknown,
+      { _id: string; username: string; isAdmin: boolean }
+    >,
+    res: Express.Response
+  ) {
     const accessToken = jwt.sign(
       {
         id: req.user._id,

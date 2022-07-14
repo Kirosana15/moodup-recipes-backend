@@ -1,15 +1,26 @@
 import RecipeService from "../services/recipeService";
+import Express from "express";
+import { Query } from "express-serve-static-core";
 
 const recipeService = new RecipeService();
+
+export interface TypedRequest<T extends Query, U, V> extends Express.Request {
+  query: T;
+  body: U;
+  user: V;
+}
 
 // RecipeController class for recipe related requests
 class RecipeController {
   // Returns a list of all recipes
-  public async getAllRecipes(req: any, res: any) {
+  public async getAllRecipes(
+    req: TypedRequest<{ page: string; limit: string }, unknown, unknown>,
+    res: Express.Response
+  ) {
     try {
       const recipes = await recipeService.getAllRecipes(
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {
@@ -17,7 +28,7 @@ class RecipeController {
     }
   }
   // Returns a recipe with provided id
-  public async getRecipe(req: any, res: any) {
+  public async getRecipe(req: Express.Request, res: Express.Response) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
       console.log(recipe);
@@ -27,12 +38,15 @@ class RecipeController {
     }
   }
   // Returns a list of all recipes for logged in user
-  public async getRecipesByOwner(req: any, res: any) {
+  public async getRecipesByOwner(
+    req: TypedRequest<{ page: string; limit: string }, unknown, { id: string }>,
+    res: Express.Response
+  ) {
     try {
       const recipes = await recipeService.getRecipesByOwner(
         req.user.id,
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {
@@ -40,7 +54,14 @@ class RecipeController {
     }
   }
   // Creates a new recipe
-  public async createRecipe(req: any, res: any) {
+  public async createRecipe(
+    req: TypedRequest<
+      { page: string },
+      { title: string; body: string },
+      { id: string }
+    >,
+    res: Express.Response
+  ) {
     try {
       const recipe = await recipeService.createRecipe(
         req.user.id,
@@ -53,7 +74,14 @@ class RecipeController {
     }
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
-  public async updateRecipe(req: any, res: any) {
+  public async updateRecipe(
+    req: TypedRequest<
+      { page: string },
+      { body: string },
+      { id: string; isAdmin: boolean }
+    >,
+    res: Express.Response
+  ) {
     try {
       const recipe = await recipeService.updateRecipe(
         req.params.id,
@@ -73,7 +101,14 @@ class RecipeController {
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
-  public async removeRecipe(req: any, res: any) {
+  public async removeRecipe(
+    req: TypedRequest<
+      { page: string },
+      unknown,
+      { id: string; isAdmin: boolean }
+    >,
+    res: Express.Response
+  ) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
       if (recipe) {
@@ -96,12 +131,15 @@ class RecipeController {
     }
   }
   // Returns a list of recipes satisfying the search query in the title
-  public async searchRecipes(req: any, res: any) {
+  public async searchRecipes(
+    req: TypedRequest<{ page: string; limit: string }, unknown, unknown>,
+    res: Express.Response
+  ) {
     try {
       const recipes = await recipeService.getRecipesByTitle(
         req.params.query,
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {

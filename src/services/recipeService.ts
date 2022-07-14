@@ -1,6 +1,6 @@
 //Service for database operations on the "recipes" collection
 
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { IRecipe } from "../models/recipeModel";
 const Recipe = mongoose.model<IRecipe>("Recipe");
 
@@ -9,7 +9,7 @@ class RecipeService {
     const recipe = new Recipe({ ownerId, title, body });
     return recipe.save();
   }
-  public async getRecipe(id: ObjectId) {
+  public async getRecipe(id: string) {
     return await Recipe.findById(id, "_id ownerId title body created");
   }
   public async getAllRecipes(page = 1, limit = 10) {
@@ -19,7 +19,7 @@ class RecipeService {
       .sort({ created: -1 })
       .exec();
   }
-  public async getRecipesByOwner(ownerId: ObjectId, page = 1, limit = 10) {
+  public async getRecipesByOwner(ownerId: string, page = 1, limit = 10) {
     return await Recipe.find(
       { ownerId: ownerId },
       "_id ownerId title body created"
