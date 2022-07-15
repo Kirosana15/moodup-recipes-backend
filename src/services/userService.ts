@@ -1,7 +1,6 @@
 //Service for database operations on the "users" collection
 
-import mongoose from 'mongoose';
-const User = mongoose.model('User');
+import { User } from '../models/userModel';
 
 //UserService class for database operations on the "users" collection
 class UserService {
