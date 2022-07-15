@@ -1,8 +1,16 @@
-import mongoose from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
-const recipeSchema = new mongoose.Schema({
+interface IRecipe {
+  _id: Types.ObjectId;
+  ownerId: Types.ObjectId;
+  title: string;
+  body: string;
+  createdAt: Date;
+}
+
+const recipeSchema = new Schema<IRecipe>({
   ownerId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },
@@ -22,12 +30,4 @@ const recipeSchema = new mongoose.Schema({
 
 recipeSchema.index({ title: "text" });
 
-export interface IRecipe extends mongoose.Document {
-  _id: mongoose.Types.ObjectId;
-  ownerId: mongoose.Types.ObjectId;
-  title: string;
-  body: string;
-  createdAt: Date;
-}
-
-export default mongoose.model("Recipe", recipeSchema);
+export const Recipe = model<IRecipe>("Recipe", recipeSchema);

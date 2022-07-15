@@ -4,7 +4,7 @@ import { Query } from "express-serve-static-core";
 
 const recipeService = new RecipeService();
 
-export interface TypedRequest<T extends Query, U, V> extends Express.Request {
+interface TypedRequest<T extends Query, U, V> extends Express.Request {
   query: T;
   body: U;
   user: V;

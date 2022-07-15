@@ -1,7 +1,22 @@
-import mongoose from "mongoose";
+import { Schema, Model, model } from "mongoose";
 import bcrypt from "bcrypt";
 
-const userSchema = new mongoose.Schema({
+export interface IUser {
+  username: string;
+  password: string;
+  isAdmin?: boolean;
+  refreshToken?: string;
+  createdAt: Date;
+}
+
+interface IUserMethods {
+  comparePassword(password: string): Promise<boolean>;
+  compareToken(token: string): boolean;
+}
+
+type UserModel = Model<IUser, unknown, IUserMethods>;
+
+const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   username: {
     type: String,
     required: true,
@@ -32,9 +47,9 @@ userSchema.methods.comparePassword = function (
   return bcrypt.compare(password, this.password);
 };
 
-//method for chcecking wheter provided token is the same as the last generated token
+//method for checking whether provided token is the same as the last generated token
 userSchema.methods.compareToken = function (token: string): boolean {
   return token === this.refreshToken;
 };
 
-export default mongoose.model("User", userSchema);
+export const User = model<IUser, UserModel>("User", userSchema);

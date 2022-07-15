@@ -1,7 +1,7 @@
 //Controller for user authentication
 import "dotenv/config";
 import UserService from "../services/userService";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Express from "express";
 import { Query } from "express-serve-static-core";
@@ -51,7 +51,7 @@ class UserController {
   ) {
     if (req.body.password && req.body.username) {
       try {
-        const user: any = await userService.getUser(req.body.username);
+        const user = await userService.getUser(req.body.username);
         if (user) {
           try {
             const isValid = await user.comparePassword(req.body.password);
@@ -145,7 +145,7 @@ class UserController {
           res.status(401).send(err);
         } else {
           try {
-            const user: any = await userService.getUserById(decoded.id);
+            const user = await userService.getUserById(decoded.id);
             if (user) {
               if (user.compareToken(token)) {
                 req.user = user;

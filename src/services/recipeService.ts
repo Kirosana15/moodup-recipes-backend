@@ -1,8 +1,6 @@
 //Service for database operations on the "recipes" collection
 
-import mongoose from "mongoose";
-import { IRecipe } from "../models/recipeModel";
-const Recipe = mongoose.model<IRecipe>("Recipe");
+import { Recipe } from "../models/recipeModel";
 
 class RecipeService {
   public async createRecipe(ownerId: string, title: string, body: string) {
