@@ -1,7 +1,7 @@
 //Router for user authentication
 
 import express from 'express';
-import UserController from '../controllers/userController';
+import { UserController } from '../controllers/userController';
 import AuthController from '../controllers/authController';
 
 const router = express.Router();

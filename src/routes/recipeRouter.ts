@@ -2,7 +2,7 @@
 
 import express from 'express';
 import AuthController from '../controllers/authController';
-import RecipeController from '../controllers/recipeController';
+import { RecipeController } from '../controllers/recipeController';
 
 const router = express.Router();
 

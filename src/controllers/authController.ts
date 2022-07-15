@@ -5,7 +5,7 @@ import Express from 'express';
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 
 export interface TypedRequest<T> extends Express.Request {
-  user: T;
+  body: { user: T };
 }
 
 // AuthController is a middleware class that handles user authentication
@@ -21,7 +21,7 @@ class AuthController {
     if (token) {
       try {
         const decoded = jwt.verify(token, TOKEN_KEY); // decode the token
-        req.user = decoded;
+        req.body.user = decoded;
         next();
       } catch (err) {
         res.status(401).send('Invalid token. Please refresh your token');
@@ -36,7 +36,7 @@ class AuthController {
     res: Express.Response,
     next: Express.NextFunction
   ) {
-    if (req.user.isAdmin) {
+    if (req.body.user.isAdmin) {
       next();
     } else {
       res.status(403).send('Forbidden');
