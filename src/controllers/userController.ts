@@ -1,10 +1,10 @@
 //Controller for user authentication
-import "dotenv/config";
-import UserService from "../services/userService";
-import * as jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import 'dotenv/config';
+import UserService from '../services/userService';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
-const TOKEN_KEY = process.env.TOKEN_KEY || "secret";
+const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 const userService = new UserService();
 
 //UserController class for user related requests
@@ -22,13 +22,13 @@ class UserController {
         res.status(201).send(user);
       } catch (err: any) {
         if (err.code === 11000) {
-          res.status(400).send("User already exists");
+          res.status(400).send('User already exists');
         } else {
           res.status(400).send(err);
         }
       }
     } else {
-      res.status(400).send("Missing username or password");
+      res.status(400).send('Missing username or password');
     }
   }
   //Authenticate a user with provided username and password
@@ -43,20 +43,20 @@ class UserController {
               req.user = user;
               next();
             } else {
-              res.status(401).send("Invalid password");
+              res.status(401).send('Invalid password');
             }
           } catch (err) {
             console.log(err);
             res.status(400);
           }
         } else {
-          res.status(404).send("User not found");
+          res.status(404).send('User not found');
         }
       } catch (err) {
         res.status(400).send(err);
       }
     } else {
-      res.status(400).send("Missing username or password");
+      res.status(400).send('Missing username or password');
     }
   }
 
@@ -65,7 +65,7 @@ class UserController {
     if (req.user) {
       res.status(200).send(req.user);
     } else {
-      res.status(401).send("Unauthorized");
+      res.status(401).send('Unauthorized');
     }
   }
 
@@ -89,7 +89,7 @@ class UserController {
       if (user) {
         res.status(200).send(user);
       } else {
-        res.status(404).send("User not found");
+        res.status(404).send('User not found');
       }
     } catch (err) {
       res.status(400).send(err);
@@ -103,7 +103,7 @@ class UserController {
       if (user) {
         res.status(200).send(user);
       } else {
-        res.status(404).send("User not found");
+        res.status(404).send('User not found');
       }
     } catch (err) {
       res.status(400).send(err);
@@ -125,10 +125,10 @@ class UserController {
                 req.user = user;
                 next();
               } else {
-                res.status(401).send("Invalid token");
+                res.status(401).send('Invalid token');
               }
             } else {
-              res.status(404).send("User not found");
+              res.status(404).send('User not found');
             }
           } catch (err) {
             res.status(400).send(err);
@@ -136,7 +136,7 @@ class UserController {
         }
       });
     } else {
-      res.status(401).send("Unauthorized");
+      res.status(401).send('Unauthorized');
     }
   }
 
@@ -150,10 +150,10 @@ class UserController {
         isAdmin: req.user.isAdmin,
       },
       TOKEN_KEY,
-      { expiresIn: "15m" }
+      { expiresIn: '15m' }
     );
     const refreshToken = jwt.sign({ id: req.user._id }, TOKEN_KEY, {
-      expiresIn: "30m",
+      expiresIn: '30m',
     });
     try {
       await userService.updateRefreshToken(req.user._id, refreshToken);
