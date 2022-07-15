@@ -1,13 +1,13 @@
 // eslint-disable-next-line no-useless-escape
-import "dotenvconfig";
+import "dotenv/config";
 import express, { Application } from "express";
 import morgan from "morgan";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import m2s from "mongoose-to-swagger";
 
-import User from "./models/userModel";
-import Recipe from "./models/recipeModel";
+import { User } from "./models/userModel";
+import { Recipe } from "./models/recipeModel";
 
 import mongoose from "mongoose";
 import userRouter from "./routes/userRouter";

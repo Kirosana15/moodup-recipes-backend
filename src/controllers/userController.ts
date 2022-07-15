@@ -9,14 +9,13 @@ import { Query } from "express-serve-static-core";
 const TOKEN_KEY = process.env.TOKEN_KEY || "secret";
 const userService = new UserService();
 
-export interface TypedRequest<T extends Query, U, V> extends Express.Request {
+export interface TypedRequest<T extends Query, U> extends Express.Request {
   query: T;
   body: U;
-  user: V;
 }
 
 //UserController class for user related requests
-class UserController {
+export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
   public async register(req: Express.Request, res: Express.Response) {
@@ -42,9 +41,8 @@ class UserController {
   //Authenticate a user with provided username and password
   public async login(
     req: TypedRequest<
-      { page: string },
-      { password: string; username: string },
-      unknown
+      Query,
+      { password: string; username: string; user: unknown }
     >,
     res: Express.Response,
     next: Express.NextFunction
@@ -56,7 +54,7 @@ class UserController {
           try {
             const isValid = await user.comparePassword(req.body.password);
             if (isValid) {
-              req.user = user;
+              req.body.user = user;
               next();
             } else {
               res.status(401).send("Invalid password");
@@ -77,12 +75,9 @@ class UserController {
   }
 
   //Provides logged in user data to the client
-  public getProfile(
-    req: TypedRequest<{ page: string }, unknown, unknown>,
-    res: Express.Response
-  ) {
-    if (req.user) {
-      res.status(200).send(req.user);
+  public getProfile(req: Express.Request, res: Express.Response) {
+    if (req.body.user) {
+      res.status(200).send(req.body.user);
     } else {
       res.status(401).send("Unauthorized");
     }
@@ -90,7 +85,7 @@ class UserController {
 
   //Provides a list of all users
   public async getAllUsers(
-    req: TypedRequest<{ page: string; limit: string }, unknown, unknown>,
+    req: TypedRequest<{ page: string; limit: string }, unknown>,
     res: Express.Response
   ) {
     try {
@@ -134,7 +129,7 @@ class UserController {
 
   //Validates a refresh token and fetches user data if valid
   public async refreshToken(
-    req: TypedRequest<Query, unknown, unknown>,
+    req: Express.Request,
     res: Express.Response,
     next: Express.NextFunction
   ) {
@@ -148,7 +143,7 @@ class UserController {
             const user = await userService.getUserById(decoded.id);
             if (user) {
               if (user.compareToken(token)) {
-                req.user = user;
+                req.body.user = user;
                 next();
               } else {
                 res.status(401).send("Invalid token");
@@ -168,28 +163,21 @@ class UserController {
 
   //Generates a new set of tokens for the user
   //New refresh token is stored and old one is invalidated
-  public async generateToken(
-    req: TypedRequest<
-      Query,
-      unknown,
-      { _id: string; username: string; isAdmin: boolean }
-    >,
-    res: Express.Response
-  ) {
+  public async generateToken(req: Express.Request, res: Express.Response) {
     const accessToken = jwt.sign(
       {
-        id: req.user._id,
-        username: req.user.username,
-        isAdmin: req.user.isAdmin,
+        id: req.body.user._id,
+        username: req.body.user.username,
+        isAdmin: req.body.user.isAdmin,
       },
       TOKEN_KEY,
       { expiresIn: "15m" }
     );
-    const refreshToken = jwt.sign({ id: req.user._id }, TOKEN_KEY, {
+    const refreshToken = jwt.sign({ id: req.body.user._id }, TOKEN_KEY, {
       expiresIn: "30m",
     });
     try {
-      await userService.updateRefreshToken(req.user._id, refreshToken);
+      await userService.updateRefreshToken(req.body.user._id, refreshToken);
       res.status(200).send({ accessToken, refreshToken });
     } catch (err) {
       res.status(400).send(err);

@@ -2,7 +2,10 @@
 
 import express from "express";
 import AuthController from "../controllers/authController";
-import RecipeController from "../controllers/recipeController";
+import {
+  RecipeController,
+  TypedRequest,
+} from "../controllers/recipeController";
 
 const router = express.Router();
 
@@ -152,14 +155,17 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
  */
-router.get("/recipes/:id", authController.authorizeUser, (req, res) => {
-  if (req.params.id === "all") {
-    authController.authorizeAdmin, recipeController.getAllRecipes(req, res);
-    console.log(req.params.id);
-  } else {
-    recipeController.getRecipe(req, res);
+router.get(
+  "/recipes/:id",
+  authController.authorizeUser,
+  (req: TypedRequest<{ page: string; limit: string }, unknown>, res) => {
+    if (req.params.id === "all") {
+      authController.authorizeAdmin, recipeController.getAllRecipes(req, res);
+    } else {
+      recipeController.getRecipe(req, res);
+    }
   }
-});
+);
 router.put(
   "/recipes/:id",
   authController.authorizeUser,
