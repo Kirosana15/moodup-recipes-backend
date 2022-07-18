@@ -13,7 +13,7 @@ class UserController {
   //password is hashed before storing in the database
   public async register(req: any, res: any) {
     if (req.body.password && req.body.username) {
-      req.body.password = bcrypt.hashSync(req.body.password, 10);
+      req.body.password = await bcrypt.hash(req.body.password, 10);
       try {
         const user = await userService.createUser(
           req.body.username,
