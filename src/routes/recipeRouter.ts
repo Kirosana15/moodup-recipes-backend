@@ -56,8 +56,16 @@ const authController = new AuthController();
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
  */
-router.post('/recipes', authController.authorizeUser, recipeController.createRecipe);
-router.get('/recipes', authController.authorizeUser, recipeController.getRecipesByOwner);
+router.post(
+  '/recipes',
+  authController.authorizeUser,
+  recipeController.createRecipe
+);
+router.get(
+  '/recipes',
+  authController.authorizeUser,
+  recipeController.getRecipesByOwner
+);
 
 /**
  * @swagger
@@ -145,16 +153,23 @@ router.get('/recipes', authController.authorizeUser, recipeController.getRecipes
  *           $ref: '#/components/schemas/Recipe'
  */
 router.get('/recipes/:id', authController.authorizeUser, (req, res) => {
-    if (req.params.id === "all") {
-        authController.authorizeAdmin,
-        recipeController.getAllRecipes(req, res);
-        console.log(req.params.id);
-    } else {
-        recipeController.getRecipe(req, res);
-    }
+  if (req.params.id === 'all') {
+    authController.authorizeAdmin, recipeController.getAllRecipes(req, res);
+    console.log(req.params.id);
+  } else {
+    recipeController.getRecipe(req, res);
+  }
 });
-router.put('/recipes/:id', authController.authorizeUser, recipeController.updateRecipe);
-router.delete('/recipes/:id', authController.authorizeUser, recipeController.removeRecipe);
+router.put(
+  '/recipes/:id',
+  authController.authorizeUser,
+  recipeController.updateRecipe
+);
+router.delete(
+  '/recipes/:id',
+  authController.authorizeUser,
+  recipeController.removeRecipe
+);
 
 /**
  * @swagger
@@ -178,6 +193,10 @@ router.delete('/recipes/:id', authController.authorizeUser, recipeController.rem
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
  */
-router.get('/recipes/search/:query', authController.authorizeUser, recipeController.searchRecipes);
+router.get(
+  '/recipes/search/:query',
+  authController.authorizeUser,
+  recipeController.searchRecipes
+);
 
 export default router;

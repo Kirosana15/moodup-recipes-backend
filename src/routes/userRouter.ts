@@ -82,7 +82,12 @@ router.post('/login', userController.login, userController.generateToken);
  *           items:
  *             $ref: '#/components/schemas/User'
  */
-router.get('/users', authController.authorizeUser, authController.authorizeAdmin, userController.getAllUsers);
+router.get(
+  '/users',
+  authController.authorizeUser,
+  authController.authorizeAdmin,
+  userController.getAllUsers
+);
 
 /**
  * @swagger
@@ -108,7 +113,7 @@ router.get('/users', authController.authorizeUser, authController.authorizeAdmin
  *   delete:
  *     tags:
  *       - Users
- *     description: Deletes a user 
+ *     description: Deletes a user
  *     produces:
  *       - application/json
  *     security:
@@ -119,7 +124,12 @@ router.get('/users', authController.authorizeUser, authController.authorizeAdmin
  *         in: path
  */
 router.get('/users/:id', authController.authorizeUser, userController.getUser);
-router.delete('/users/:id', authController.authorizeUser, authController.authorizeAdmin, userController.removeUser);
+router.delete(
+  '/users/:id',
+  authController.authorizeUser,
+  authController.authorizeAdmin,
+  userController.removeUser
+);
 
 /**
  * @swagger
@@ -157,6 +167,10 @@ router.get('/profile', authController.authorizeUser, userController.getProfile);
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.post('/refresh-token', userController.refreshToken, userController.generateToken);
+router.post(
+  '/refresh-token',
+  userController.refreshToken,
+  userController.generateToken
+);
 
 export default router;
