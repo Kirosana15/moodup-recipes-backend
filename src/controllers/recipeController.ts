@@ -13,7 +13,8 @@ class RecipeController {
       );
       res.status(200).send(recipes);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
   // Returns a recipe with provided id
@@ -23,7 +24,8 @@ class RecipeController {
       console.log(recipe);
       res.status(200).send(recipe);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
   // Returns a list of all recipes for logged in user
@@ -36,7 +38,8 @@ class RecipeController {
       );
       res.status(200).send(recipes);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
   // Creates a new recipe
@@ -49,7 +52,8 @@ class RecipeController {
       );
       res.status(201).send(recipe);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
@@ -69,7 +73,8 @@ class RecipeController {
         res.status(404).send('Recipe not found');
       }
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
@@ -82,7 +87,8 @@ class RecipeController {
             const removed = await recipeService.removeRecipe(req.params.id);
             res.status(200).send(removed);
           } catch (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400);
           }
         } else {
           res.status(403).send('Unauthorized');
@@ -105,7 +111,8 @@ class RecipeController {
       );
       res.status(200).send(recipes);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
 }
