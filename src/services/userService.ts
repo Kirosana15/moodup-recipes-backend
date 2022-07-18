@@ -11,23 +11,23 @@ class UserService {
   }
 
   public async getUser(username: string) {
-    return await User.findOne({ username });
+    return User.findOne({ username });
   }
 
   public async getUserById(id: string) {
-    return await User.findById(id);
+    return User.findById(id);
   }
 
   public async updateRefreshToken(id: string, token: string) {
-    return await User.findByIdAndUpdate(id, { refreshToken: token });
+    return User.findByIdAndUpdate(id, { refreshToken: token });
   }
 
   public async removeUser(id: string) {
-    return await User.findByIdAndRemove(id);
+    return User.findByIdAndRemove(id);
   }
 
   public async getAllUsers(page: number = 1, limit: number = 10) {
-    return await User.find({}, '_id username isAdmin created')
+    return User.find({}, '_id username isAdmin created')
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ created: -1 })

@@ -10,10 +10,10 @@ class RecipeService {
     return recipe.save();
   }
   public async getRecipe(id: ObjectId) {
-    return await Recipe.findById(id, '_id ownerId title body created');
+    return Recipe.findById(id, '_id ownerId title body created');
   }
   public async getAllRecipes(page: number = 1, limit: number = 10) {
-    return await Recipe.find({}, '_id ownerId title body created')
+    return Recipe.find({}, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ created: -1 })
@@ -24,20 +24,17 @@ class RecipeService {
     page: number = 1,
     limit: number = 10
   ) {
-    return await Recipe.find(
-      { ownerId: ownerId },
-      '_id ownerId title body created'
-    )
+    return Recipe.find({ ownerId: ownerId }, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ created: -1 })
       .exec();
   }
   public async updateRecipe(id: string, body: string) {
-    return await Recipe.findByIdAndUpdate(id, { body });
+    return Recipe.findByIdAndUpdate(id, { body });
   }
   public async removeRecipe(id: string) {
-    return await Recipe.findByIdAndRemove(id);
+    return Recipe.findByIdAndRemove(id);
   }
   // case insensitive partial text search on title
   public async getRecipesByTitle(
@@ -45,7 +42,7 @@ class RecipeService {
     page: number = 1,
     limit: number = 10
   ) {
-    return await Recipe.find(
+    return Recipe.find(
       { title: { $regex: title, $options: 'i' } },
       '_id ownerId title body created'
     )
