@@ -152,14 +152,17 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
  */
-router.get('/recipes/:id', authController.authorizeUser, (req, res) => {
-  if (req.params.id === 'all') {
-    authController.authorizeAdmin, recipeController.getAllRecipes(req, res);
-    console.log(req.params.id);
-  } else {
-    recipeController.getRecipe(req, res);
-  }
-});
+router.get(
+  '/recipes/all',
+  authController.authorizeUser,
+  authController.authorizeAdmin,
+  recipeController.getAllRecipes
+);
+router.get(
+  '/recipes/:id',
+  authController.authorizeUser,
+  recipeController.getRecipe
+);
 router.put(
   '/recipes/:id',
   authController.authorizeUser,
