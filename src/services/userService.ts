@@ -11,19 +11,19 @@ class UserService {
   }
 
   public getUser(username: string) {
-    return User.findOne({ username });
+    return User.findOne({ username }).exec();
   }
 
   public getUserById(id: string) {
-    return User.findById(id);
+    return User.findById(id).exec();
   }
 
   public updateRefreshToken(id: string, token: string) {
-    return User.findByIdAndUpdate(id, { refreshToken: token });
+    return User.findByIdAndUpdate(id, { refreshToken: token }).exec();
   }
 
   public removeUser(id: string) {
-    return User.findByIdAndRemove(id);
+    return User.findByIdAndRemove(id).exec();
   }
 
   public getAllUsers(page: number = 1, limit: number = 10) {
