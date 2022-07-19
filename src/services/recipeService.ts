@@ -5,21 +5,21 @@ import { IRecipe } from '../models/recipeModel';
 const Recipe = mongoose.model<IRecipe>('Recipe');
 
 class RecipeService {
-  public async createRecipe(ownerId: string, title: string, body: string) {
+  public createRecipe(ownerId: string, title: string, body: string) {
     const recipe = new Recipe({ ownerId, title, body });
     return recipe.save();
   }
-  public async getRecipe(id: ObjectId) {
+  public getRecipe(id: ObjectId) {
     return Recipe.findById(id, '_id ownerId title body created');
   }
-  public async getAllRecipes(page: number = 1, limit: number = 10) {
+  public getAllRecipes(page: number = 1, limit: number = 10) {
     return Recipe.find({}, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ created: -1 })
       .exec();
   }
-  public async getRecipesByOwner(
+  public getRecipesByOwner(
     ownerId: ObjectId,
     page: number = 1,
     limit: number = 10
@@ -30,14 +30,14 @@ class RecipeService {
       .sort({ created: -1 })
       .exec();
   }
-  public async updateRecipe(id: string, body: string) {
+  public updateRecipe(id: string, body: string) {
     return Recipe.findByIdAndUpdate(id, { body });
   }
-  public async removeRecipe(id: string) {
+  public removeRecipe(id: string) {
     return Recipe.findByIdAndRemove(id);
   }
   // case insensitive partial text search on title
-  public async getRecipesByTitle(
+  public getRecipesByTitle(
     title: string,
     page: number = 1,
     limit: number = 10
