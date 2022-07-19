@@ -24,7 +24,8 @@ class UserController {
         if (err.code === 11000) {
           res.status(400).send('User already exists');
         } else {
-          res.status(400).send(err);
+          console.log(err);
+          res.status(400);
         }
       }
     } else {
@@ -53,7 +54,8 @@ class UserController {
           res.status(404).send('User not found');
         }
       } catch (err) {
-        res.status(400).send(err);
+        console.log(err);
+        res.status(400);
       }
     } else {
       res.status(400).send('Missing username or password');
@@ -78,7 +80,8 @@ class UserController {
       );
       res.status(200).send(users);
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
 
@@ -92,7 +95,8 @@ class UserController {
         res.status(404).send('User not found');
       }
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
 
@@ -106,7 +110,8 @@ class UserController {
         res.status(404).send('User not found');
       }
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
 
@@ -116,7 +121,8 @@ class UserController {
     if (token) {
       jwt.verify(token, TOKEN_KEY, async (err: any, decoded: any) => {
         if (err) {
-          res.status(401).send(err);
+          console.log(err);
+          res.status(400);
         } else {
           try {
             const user: any = await userService.getUserById(decoded.id);
@@ -131,7 +137,8 @@ class UserController {
               res.status(404).send('User not found');
             }
           } catch (err) {
-            res.status(400).send(err);
+            console.log(err);
+            res.status(400);
           }
         }
       });
@@ -159,7 +166,8 @@ class UserController {
       await userService.updateRefreshToken(req.user._id, refreshToken);
       res.status(200).send({ accessToken, refreshToken });
     } catch (err) {
-      res.status(400).send(err);
+      console.log(err);
+      res.status(400);
     }
   }
 }
