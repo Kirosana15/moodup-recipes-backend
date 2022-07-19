@@ -1,7 +1,7 @@
 //Controller for user authentication
 import 'dotenv/config';
 import UserService from '../services/userService';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { Query } from 'express-serve-static-core';
@@ -14,6 +14,13 @@ export interface TypedRequest<T extends Query, U> extends Express.Request {
   body: U;
 }
 
+interface MongoError {
+  index: string;
+  code: number;
+  keyPattern: unknown;
+  keyValue: unknown;
+}
+
 //UserController class for user related requests
 export class UserController {
   //Register a new user with provided username and password
@@ -24,8 +31,8 @@ export class UserController {
       try {
         const user = await userService.createUser(req.body.username, hashed);
         res.status(201).send(user);
-      } catch (err: any) {
-        if (err.code === 11000) {
+      } catch (err) {
+        if ((err as MongoError).code === 11000) {
           res.status(400).send('User already exists');
         } else {
           console.log(err);
@@ -137,13 +144,15 @@ export class UserController {
   ) {
     const token = req.headers.authorization;
     if (token) {
-      jwt.verify(token, TOKEN_KEY, async (err, decoded: any) => {
+      jwt.verify(token, TOKEN_KEY, async (err, decoded) => {
         if (err) {
           console.log(err);
           res.status(400);
         } else {
           try {
-            const user = await userService.getUserById(decoded.id);
+            const user = await userService.getUserById(
+              (decoded as JwtPayload).id
+            );
             if (user) {
               if (user.compareToken(token)) {
                 req.body.user = user;
