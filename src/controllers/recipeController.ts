@@ -21,8 +21,11 @@ class RecipeController {
   public async getRecipe(req: any, res: any) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
-      console.log(recipe);
-      res.status(200).send(recipe);
+      if (recipe) {
+        res.status(200).send(recipe);
+      } else {
+        res.status(404).send('Recipe not found');
+      }
     } catch (err) {
       console.log(err);
       res.status(400);
