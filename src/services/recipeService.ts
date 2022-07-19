@@ -10,7 +10,7 @@ class RecipeService {
     return recipe.save();
   }
   public getRecipe(id: ObjectId) {
-    return Recipe.findById(id, '_id ownerId title body created');
+    return Recipe.findById(id, '_id ownerId title body created').exec();
   }
   public getAllRecipes(page: number = 1, limit: number = 10) {
     return Recipe.find({}, '_id ownerId title body created')
@@ -31,10 +31,10 @@ class RecipeService {
       .exec();
   }
   public updateRecipe(id: string, body: string) {
-    return Recipe.findByIdAndUpdate(id, { body });
+    return Recipe.findByIdAndUpdate(id, { body }).exec();
   }
   public removeRecipe(id: string) {
-    return Recipe.findByIdAndRemove(id);
+    return Recipe.findByIdAndRemove(id).exec();
   }
   // case insensitive partial text search on title
   public getRecipesByTitle(
