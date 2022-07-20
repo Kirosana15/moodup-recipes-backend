@@ -4,6 +4,14 @@ import express from 'express';
 import { UserController } from '../controllers/userController';
 import AuthController from '../controllers/authController';
 import { validate } from '../validators/validators';
+import {
+  validateLogin,
+  validateRegister,
+  validateGetAllUsers,
+  validateGetUser,
+  validateRemoveUser,
+  validateRefreshToken,
+} from '../validators/userValidators';
 
 const router = express.Router();
 const userController = new UserController();
@@ -31,11 +39,7 @@ const authController = new AuthController();
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.post(
-  '/register',
-  validate(['username', 'password']),
-  userController.register
-);
+router.post('/register', validate(validateRegister), userController.register);
 
 /**
  * @swagger
@@ -61,9 +65,9 @@ router.post(
  */
 router.post(
   '/login',
-  validate(['username', 'password']),
-  userController.login,
-  userController.generateToken
+  validate(validateLogin),
+  userController.login
+  // userController.generateToken
 );
 
 /**
@@ -96,7 +100,7 @@ router.get(
   '/users',
   authController.authorizeUser,
   authController.authorizeAdmin,
-  validate(['page', 'limit']),
+  validate(validateGetAllUsers),
   userController.getAllUsers
 );
 
@@ -137,14 +141,14 @@ router.get(
 router.get(
   '/users/:id',
   authController.authorizeUser,
-  validate(['id']),
+  validate(validateGetUser),
   userController.getUser
 );
 router.delete(
   '/users/:id',
   authController.authorizeUser,
   authController.authorizeAdmin,
-  validate(['id']),
+  validate(validateRemoveUser),
   userController.removeUser
 );
 
@@ -186,7 +190,7 @@ router.get('/profile', authController.authorizeUser, userController.getProfile);
  */
 router.post(
   '/refresh-token',
-  validate(['token']),
+  validate(validateRefreshToken),
   userController.refreshToken,
   userController.generateToken
 );
