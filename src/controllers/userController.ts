@@ -4,15 +4,10 @@ import UserService from '../services/userService';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Express from 'express';
-import { Query } from 'express-serve-static-core';
+import { TypedRequest } from '../interfaces/typedRequest';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 const userService = new UserService();
-
-export interface TypedRequest<T extends Query, U> extends Express.Request {
-  query: T;
-  body: U;
-}
 
 interface MongoError {
   index: string;
@@ -32,7 +27,7 @@ export class UserController {
         const user = await userService.createUser(req.body.username, hashed);
         res.status(201).send(user);
       } catch (err) {
-        if ((err as MongoError).code === 11000) {
+        if ((<MongoError>err).code === 11000) {
           res.status(400).send('User already exists');
         } else {
           console.log(err);
@@ -45,10 +40,7 @@ export class UserController {
   }
   //Authenticate a user with provided username and password
   public async login(
-    req: TypedRequest<
-      Query,
-      { password: string; username: string; user: unknown }
-    >,
+    req: TypedRequest,
     res: Express.Response,
     next: Express.NextFunction
   ) {
@@ -90,10 +82,7 @@ export class UserController {
   }
 
   //Provides a list of all users
-  public async getAllUsers(
-    req: TypedRequest<{ page: string; limit: string }, unknown>,
-    res: Express.Response
-  ) {
+  public async getAllUsers(req: TypedRequest, res: Express.Response) {
     try {
       const users = await userService.getAllUsers(
         parseInt(req.query.page),

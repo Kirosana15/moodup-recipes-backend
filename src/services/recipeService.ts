@@ -17,7 +17,7 @@ class RecipeService {
       .sort({ created: -1 })
       .exec();
   }
-  public getRecipesByOwner(ownerId: string, page = 1, limit = 10) {
+  public getRecipesByOwner(ownerId: string | undefined, page = 1, limit = 10) {
     return Recipe.find({ ownerId: ownerId }, '_id ownerId title body created')
       .skip((page - 1) * limit)
       .limit(limit)

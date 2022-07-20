@@ -1,7 +1,7 @@
 import { Schema, Model, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-export interface IUser {
+interface IUser {
   username: string;
   password: string;
   isAdmin?: boolean;
