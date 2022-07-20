@@ -191,8 +191,7 @@ router.get('/profile', authController.authorizeUser, userController.getProfile);
 router.post(
   '/refresh-token',
   validate(validateRefreshToken),
-  userController.refreshToken,
-  userController.generateToken
+  userController.refreshToken
 );
 
 export default router;
