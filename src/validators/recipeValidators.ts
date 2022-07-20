@@ -1,7 +1,6 @@
 import { query, param, ValidationChain, body } from 'express-validator';
 
 const validateId = param('id').isMongoId();
-
 const validatePage = query('page').optional().isInt().toInt();
 const validateLimit = query('limit').optional().isInt().toInt();
 const validateTitle = body('title')
@@ -25,8 +24,6 @@ export const validateGetAllRecipes: ValidationChain[] = [
   validateLimit,
 ];
 
-export const validateGetRecipe: ValidationChain[] = [validateId];
-
 export const validateCreateRecipe: ValidationChain[] = [
   validateTitle,
   validateBody,
@@ -37,10 +34,11 @@ export const validateUpdateRecipe: ValidationChain[] = [
   validateBody,
 ];
 
-export const validateRemoveRecipe: ValidationChain[] = [validateId];
-
 export const validateSearchRecipes: ValidationChain[] = [
   validateQuery,
   validatePage,
   validateLimit,
 ];
+
+export const validateRemoveRecipe: ValidationChain[] = [validateId];
+export const validateGetRecipe: ValidationChain[] = [validateId];
