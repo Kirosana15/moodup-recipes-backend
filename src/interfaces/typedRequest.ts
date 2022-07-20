@@ -1,6 +1,7 @@
+import { Query } from 'express-serve-static-core';
 import { User } from './user';
 
-export interface TypedBody {
+interface TypedBody {
   user: User;
   title: string;
   body: string;
@@ -8,7 +9,7 @@ export interface TypedBody {
   password: string;
 }
 
-export interface TypedQuery {
+interface TypedQuery extends Query {
   page: string;
   limit: string;
 }
@@ -19,7 +20,7 @@ interface TypedParams {
 }
 
 interface TypedHeaders {
-  authorization: string;
+  authorization?: string;
 }
 
 export interface TypedRequest extends Express.Request {

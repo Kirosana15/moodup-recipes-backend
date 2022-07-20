@@ -20,7 +20,7 @@ export class RecipeController {
     }
   }
   // Returns a recipe with provided id
-  public async getRecipe(req: Express.Request, res: Express.Response) {
+  public async getRecipe(req: TypedRequest, res: Express.Response) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
       if (recipe) {

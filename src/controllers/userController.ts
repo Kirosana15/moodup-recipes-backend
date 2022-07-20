@@ -20,13 +20,13 @@ interface MongoError {
 export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
-  public async register(req: Express.Request, res: Express.Response) {
+  public async register(req: TypedRequest, res: Express.Response) {
     if (req.body.password && req.body.username) {
       const hashed = await bcrypt.hash(req.body.password, 10);
       try {
         const user = await userService.createUser(req.body.username, hashed);
         res.status(201).send(user);
-      } catch (err) {
+      } catch (err: MongoError | unknown) {
         if ((<MongoError>err).code === 11000) {
           res.status(400).send('User already exists');
         } else {
@@ -73,7 +73,7 @@ export class UserController {
   }
 
   //Provides logged in user data to the client
-  public getProfile(req: Express.Request, res: Express.Response) {
+  public getProfile(req: TypedRequest, res: Express.Response) {
     if (req.body.user) {
       res.status(200).send(req.body.user);
     } else {
@@ -96,7 +96,7 @@ export class UserController {
   }
 
   //Provides data of a user with provided id
-  public async getUser(req: Express.Request, res: Express.Response) {
+  public async getUser(req: TypedRequest, res: Express.Response) {
     try {
       const user = await userService.getUser(req.params.id);
       if (user) {
@@ -111,7 +111,7 @@ export class UserController {
   }
 
   //Deletes a user with provided id
-  public async removeUser(req: Express.Request, res: Express.Response) {
+  public async removeUser(req: TypedRequest, res: Express.Response) {
     try {
       const user = await userService.removeUser(req.params.id);
       if (user) {
@@ -127,7 +127,7 @@ export class UserController {
 
   //Validates a refresh token and fetches user data if valid
   public async refreshToken(
-    req: Express.Request,
+    req: TypedRequest,
     res: Express.Response,
     next: Express.NextFunction
   ) {
@@ -165,21 +165,24 @@ export class UserController {
 
   //Generates a new set of tokens for the user
   //New refresh token is stored and old one is invalidated
-  public async generateToken(req: Express.Request, res: Express.Response) {
+  public async generateToken(req: TypedRequest, res: Express.Response) {
     const accessToken = jwt.sign(
       {
-        id: req.body.user._id,
+        id: req.body.user.id,
         username: req.body.user.username,
         isAdmin: req.body.user.isAdmin,
       },
       TOKEN_KEY,
       { expiresIn: '15m' }
     );
-    const refreshToken = jwt.sign({ id: req.body.user._id }, TOKEN_KEY, {
+    const refreshToken = jwt.sign({ id: req.body.user.id }, TOKEN_KEY, {
       expiresIn: '30m',
     });
     try {
-      await userService.updateRefreshToken(req.body.user._id, refreshToken);
+      if (!req.body.user.id) {
+        return res.status(400).send('Please provide user id');
+      }
+      await userService.updateRefreshToken(req.body.user.id, refreshToken);
       res.status(200).send({ accessToken, refreshToken });
     } catch (err) {
       console.log(err);
