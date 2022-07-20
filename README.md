@@ -2,12 +2,12 @@
 
 ## What is it?
 
-Recipes is a backend for storing, editing and viewing your recipes. User login is handled by JWT. Swagger docs are available in `/docs`.
+Recipes is a backend for storing, editing and viewing your recipes. User login is handled by JWT.
 
 ## Prerequisites
 
 - Node.JS v16.16.0
-- Running MongoDB database
+- Running MongoDB v5.0.7 database
 
 ## Building and running project
 
@@ -17,4 +17,8 @@ Recipes is a backend for storing, editing and viewing your recipes. User login i
 
 ## Environmental variables
 
-If you need to edit some default variables you can enter them in `/.env` file
+To set up environmental variables create `.env` file. Example values are in a file `example.env`.
+
+## Documentation
+
+Swagger docs are available in `\docs` endpoint.
