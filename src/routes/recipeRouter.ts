@@ -3,6 +3,7 @@
 import express from 'express';
 import AuthController from '../controllers/authController';
 import { RecipeController } from '../controllers/recipeController';
+import { validate } from '../validators/validators';
 
 const router = express.Router();
 
@@ -59,11 +60,13 @@ const authController = new AuthController();
 router.post(
   '/recipes',
   authController.authorizeUser,
+  validate(['body', 'title']),
   recipeController.createRecipe
 );
 router.get(
   '/recipes',
   authController.authorizeUser,
+  validate(['page', 'limit']),
   recipeController.getRecipesByOwner
 );
 
@@ -156,21 +159,25 @@ router.get(
   '/recipes/all',
   authController.authorizeUser,
   authController.authorizeAdmin,
+  validate(['page', 'limit']),
   recipeController.getAllRecipes
 );
 router.get(
   '/recipes/:id',
   authController.authorizeUser,
+  validate(['id']),
   recipeController.getRecipe
 );
 router.put(
   '/recipes/:id',
   authController.authorizeUser,
+  validate(['id', 'body']),
   recipeController.updateRecipe
 );
 router.delete(
   '/recipes/:id',
   authController.authorizeUser,
+  validate(['id']),
   recipeController.removeRecipe
 );
 
@@ -199,6 +206,7 @@ router.delete(
 router.get(
   '/recipes/search/:query',
   authController.authorizeUser,
+  validate(['query', 'page', 'limit']),
   recipeController.searchRecipes
 );
 

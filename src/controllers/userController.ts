@@ -61,7 +61,7 @@ export class UserController {
             res.status(400);
           }
         } else {
-          res.status(404).send('User not found');
+          res.status(401).send('Invalid password');
         }
       } catch (err) {
         console.log(err);
