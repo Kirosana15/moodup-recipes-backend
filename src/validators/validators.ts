@@ -27,9 +27,7 @@ const checks: { [key: string]: ValidationChain } = {
   token: header('authorization').isJWT(),
 };
 
-export const validate = (tests: string[]) => {
-  const validations: ValidationChain[] = [];
-  tests.map((test) => validations.push(checks[test]));
+export const validate = (validations: ValidationChain[]) => {
   return async (
     req: express.Request,
     res: express.Response,
@@ -37,7 +35,9 @@ export const validate = (tests: string[]) => {
   ) => {
     for (const validation of validations) {
       const result = await validation.run(req);
-      if (!result.isEmpty()) break;
+      if (!result.isEmpty()) {
+        break;
+      }
     }
     const errors = validationResult(req);
     if (errors.isEmpty()) {

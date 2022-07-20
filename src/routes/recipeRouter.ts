@@ -4,6 +4,15 @@ import express from 'express';
 import AuthController from '../controllers/authController';
 import { RecipeController } from '../controllers/recipeController';
 import { validate } from '../validators/validators';
+import {
+  validateGetRecipes,
+  validateGetAllRecipes,
+  validateGetRecipe,
+  validateCreateRecipe,
+  validateUpdateRecipe,
+  validateRemoveRecipe,
+  validateSearchRecipes,
+} from '../validators/recipeValidators';
 
 const router = express.Router();
 
@@ -35,6 +44,17 @@ const authController = new AuthController();
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Recipe'
+ */
+router.get(
+  '/recipes',
+  authController.authorizeUser,
+  validate(validateGetRecipes),
+  recipeController.getRecipesByOwner
+);
+
+/**
+ * @swagger
+ * /recipes:
  *   post:
  *     tags:
  *       - Recipes
@@ -60,14 +80,8 @@ const authController = new AuthController();
 router.post(
   '/recipes',
   authController.authorizeUser,
-  validate(['body', 'title']),
+  validate(validateCreateRecipe),
   recipeController.createRecipe
-);
-router.get(
-  '/recipes',
-  authController.authorizeUser,
-  validate(['page', 'limit']),
-  recipeController.getRecipesByOwner
 );
 
 /**
@@ -95,6 +109,17 @@ router.get(
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Recipe'
+ */
+router.get(
+  '/recipes/all',
+  authController.authorizeUser,
+  authController.authorizeAdmin,
+  validate(validateGetAllRecipes),
+  recipeController.getAllRecipes
+);
+
+/**
+ * @swagger
  * /recipes/{id}:
  *   get:
  *     tags:
@@ -114,6 +139,17 @@ router.get(
  *         description: Returns a recipe
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
+ */
+router.get(
+  '/recipes/:id',
+  authController.authorizeUser,
+  validate(validateGetRecipe),
+  recipeController.getRecipe
+);
+
+/**
+ * @swagger
+ * /recipes/{id}:
  *   put:
  *     tags:
  *       - Recipes
@@ -136,6 +172,17 @@ router.get(
  *         description: Returns an updated recipe
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
+ */
+router.put(
+  '/recipes/:id',
+  authController.authorizeUser,
+  validate(validateUpdateRecipe),
+  recipeController.updateRecipe
+);
+
+/**
+ * @swagger
+ * /recipes/{id}:
  *   delete:
  *     tags:
  *       - Recipes
@@ -155,29 +202,10 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/Recipe'
  */
-router.get(
-  '/recipes/all',
-  authController.authorizeUser,
-  authController.authorizeAdmin,
-  validate(['page', 'limit']),
-  recipeController.getAllRecipes
-);
-router.get(
-  '/recipes/:id',
-  authController.authorizeUser,
-  validate(['id']),
-  recipeController.getRecipe
-);
-router.put(
-  '/recipes/:id',
-  authController.authorizeUser,
-  validate(['id', 'body']),
-  recipeController.updateRecipe
-);
 router.delete(
   '/recipes/:id',
   authController.authorizeUser,
-  validate(['id']),
+  validate(validateRemoveRecipe),
   recipeController.removeRecipe
 );
 
@@ -206,7 +234,7 @@ router.delete(
 router.get(
   '/recipes/search/:query',
   authController.authorizeUser,
-  validate(['query', 'page', 'limit']),
+  validate(validateSearchRecipes),
   recipeController.searchRecipes
 );
 
