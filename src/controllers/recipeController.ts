@@ -66,15 +66,16 @@ export class RecipeController {
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: TypedRequest, res: Express.Response) {
-    const { id, body } = matchedData(req);
+    const { id, title, body } = matchedData(req);
     try {
-      const recipe = await recipeService.updateRecipe(id, body);
+      const recipe = await recipeService.getRecipe(id);
       if (recipe) {
         if (
           recipe.ownerId.toString() === req.body.user.id ||
           req.body.user.isAdmin
         ) {
-          res.status(StatusCodes.OK).send(recipe);
+          const newRecipe = await recipeService.updateRecipe(id, title, body);
+          res.send(newRecipe);
         } else {
           res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
         }
