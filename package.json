@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A simple API for storing recipes in mongoDB using JWT authentication",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc",
     "start": "node build/index.js",
     "dev": "nodemon"
@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@shelf/jest-mongodb": "^4.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "^28.1.6",
