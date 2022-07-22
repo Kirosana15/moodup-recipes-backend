@@ -24,8 +24,8 @@ class RecipeService {
       .sort({ created: -1 })
       .exec();
   }
-  public updateRecipe(id: string, body: string) {
-    return Recipe.findByIdAndUpdate(id, { body }).exec();
+  public updateRecipe(id: string, title: string, body: string) {
+    return Recipe.findByIdAndUpdate(id, { title, body });
   }
   public removeRecipe(id: string) {
     return Recipe.findByIdAndRemove(id).exec();
