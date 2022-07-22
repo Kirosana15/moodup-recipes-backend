@@ -47,8 +47,6 @@ class UserService {
   }
 
   public async generateToken(
-    req: any,
-    res: any,
     user: any
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
@@ -68,25 +66,23 @@ class UserService {
       return { accessToken, refreshToken };
     } catch (err) {
       console.log(err);
-      return res.status(400);
+      throw new Error('500');
     }
   }
 
   public async refreshToken(
-    req: any,
-    res: any
+    token: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const token = req.headers.authorization;
     const decoded = <JwtPayload>jwt.verify(token, this.TOKEN_KEY);
     try {
       const user = await this.getUserById(decoded.id);
       if (!user || token !== user.refreshToken) {
-        return res.status(401).send('Invalid token');
+        throw new Error('Invalid token');
       }
-      return this.generateToken(req, res, user);
+      return this.generateToken(user);
     } catch (err) {
       console.log(err);
-      return res.status(400);
+      throw new Error('500');
     }
   }
 }

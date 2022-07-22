@@ -4,6 +4,7 @@ import UserService from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
+import { matchedData } from 'express-validator';
 
 const userService = new UserService();
 
@@ -55,8 +56,6 @@ export class UserController {
 
       if (isValid) {
         const { accessToken, refreshToken } = await userService.generateToken(
-          req,
-          res,
           user
         );
         return res.status(200).send({ accessToken, refreshToken });
@@ -123,12 +122,19 @@ export class UserController {
   }
 
   public async refreshToken(req: TypedRequest, res: Express.Response) {
-    const { accessToken, refreshToken } = await userService.refreshToken(
-      req,
-      res
-    );
-    if (accessToken && refreshToken) {
-      res.send({ accessToken, refreshToken });
+    try {
+      const newTokens = await userService.refreshToken(
+        matchedData(req, { locations: ['headers'] }).authorization
+      );
+      res.send(newTokens);
+    } catch (err: Error | unknown) {
+      if (err instanceof Error) {
+        if (err.message == 'Invalid token') {
+          res.status(401).send('Invalid token');
+        } else if (err.message == '500') {
+          res.status(500);
+        }
+      }
     }
   }
 }
