@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
 import { IUser } from '../interfaces/user';
-import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 
@@ -23,12 +22,10 @@ class AuthController {
         req.body.user = decoded;
         next();
       } catch (err) {
-        res
-          .status(StatusCodes.UNAUTHORIZED)
-          .send('Invalid token. Please refresh your token');
+        res.status(401).send('Invalid token. Please refresh your token');
       }
     } else {
-      res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+      res.status(401).send('Unauthorized');
     }
   }
   // authorizeAdmin checks if the user is an admin
@@ -40,7 +37,7 @@ class AuthController {
     if (req.body.user.isAdmin) {
       next();
     } else {
-      res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
+      res.status(403).send('Forbidden');
     }
   }
 }
