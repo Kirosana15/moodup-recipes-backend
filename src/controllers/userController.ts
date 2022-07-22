@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
 import { matchedData } from 'express-validator';
+import { IUser } from '../interfaces/user';
 
 const userService = new UserService();
 
@@ -45,7 +46,7 @@ export class UserController {
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
       const { username, password } = matchedData(req);
-      const user = await userService.getUser(username);
+      const user = <IUser>await userService.getUser(username);
 
       if (!user) {
         return res.sendStatus(404);

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
-import { User } from '../interfaces/user';
+import { IUser } from '../interfaces/user';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 
@@ -18,7 +18,7 @@ class AuthController {
     const token = req.headers.authorization;
     if (token) {
       try {
-        const decoded = <User>jwt.verify(token, TOKEN_KEY);
+        const decoded = <IUser>jwt.verify(token, TOKEN_KEY);
         req.body.user = decoded;
         next();
       } catch (err) {

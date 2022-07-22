@@ -1,16 +1,10 @@
-import {
-  body,
-  param,
-  query,
-  header,
-  ValidationChain,
-  validationResult,
-} from 'express-validator';
+import { ValidationChain, validationResult } from 'express-validator';
 import express from 'express';
-//unnecessary
+import { TypedRequest } from '../interfaces/typedRequest';
+
 export const validate = (validations: ValidationChain[]) => {
   return async (
-    req: express.Request,
+    req: TypedRequest,
     res: express.Response,
     next: express.NextFunction
   ) => {

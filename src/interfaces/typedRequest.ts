@@ -1,8 +1,8 @@
 import { Query } from 'express-serve-static-core';
-import { User } from './user';
+import { IUser } from './user';
 
 interface TypedBody {
-  user: User;
+  user: IUser;
   title: string;
   body: string;
   username: string;

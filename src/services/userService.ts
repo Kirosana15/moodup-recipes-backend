@@ -3,6 +3,7 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import { IUser } from '../interfaces/user';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -47,7 +48,7 @@ class UserService {
   }
 
   public async generateToken(
-    user: any
+    user: IUser
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
       {
@@ -75,7 +76,7 @@ class UserService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const decoded = <JwtPayload>jwt.verify(token, this.TOKEN_KEY);
     try {
-      const user = await this.getUserById(decoded.id);
+      const user = <IUser>await this.getUserById(decoded.id);
       if (!user || token !== user.refreshToken) {
         throw new Error('Invalid token');
       }
