@@ -53,10 +53,15 @@ export class RecipeController {
   }
   // Creates a new recipe
   public async createRecipe(req: TypedRequest, res: Express.Response) {
-    const { id, title, body } = matchedData(req);
+    const { id, title, imageUrl, body } = matchedData(req);
     try {
-      const recipe = await recipeService.createRecipe(id, title, body);
-      res.status(StatusCodes.CREATED).send(recipe);
+      const recipe = await recipeService.createRecipe(
+        id,
+        title,
+        imageUrl,
+        body
+      );
+      res.status(201).send(recipe);
     } catch (err) {
       console.log(err);
       res
@@ -66,9 +71,14 @@ export class RecipeController {
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: TypedRequest, res: Express.Response) {
-    const { id, title, body } = matchedData(req);
+    const { id, title, imageUrl, body } = matchedData(req);
     try {
-      const recipe = await recipeService.getRecipe(id);
+      const recipe = await recipeService.updateRecipe(
+        id,
+        title,
+        imageUrl,
+        body
+      );
       if (recipe) {
         if (
           recipe.ownerId.toString() === req.body.user.id ||
