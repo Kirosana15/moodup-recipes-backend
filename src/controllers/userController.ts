@@ -1,12 +1,12 @@
 //Controller for user authentication
-import 'dotenv/config';
+
 import UserService from '../services/userService';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
+import { matchedData } from 'express-validator';
+import { IUser } from '../interfaces/user';
 
-const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 const userService = new UserService();
 
 interface MongoError {
@@ -21,10 +21,11 @@ export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
   public async register(req: TypedRequest, res: Express.Response) {
-    if (req.body.password && req.body.username) {
-      const hashed = await bcrypt.hash(req.body.password, 10);
+    const { username, password } = matchedData(req);
+    if (password && username) {
+      const hashed = await bcrypt.hash(password, 10);
       try {
-        const user = await userService.createUser(req.body.username, hashed);
+        const user = await userService.createUser(username, hashed);
         res.status(201).send(user);
       } catch (err: MongoError | unknown) {
         if ((<MongoError>err).code === 11000) {
@@ -41,34 +42,30 @@ export class UserController {
   //Authenticate a user with provided username and password
   public async login(
     req: TypedRequest,
-    res: Express.Response,
-    next: Express.NextFunction
-  ) {
-    if (req.body.password && req.body.username) {
-      try {
-        const user = await userService.getUser(req.body.username);
-        if (user) {
-          try {
-            const isValid = await user.comparePassword(req.body.password);
-            if (isValid) {
-              req.body.user = user;
-              next();
-            } else {
-              res.status(401).send('Invalid password');
-            }
-          } catch (err) {
-            console.log(err);
-            res.status(400);
-          }
-        } else {
-          res.status(404).send('User not found');
-        }
-      } catch (err) {
-        console.log(err);
-        res.status(400);
+    res: Express.Response
+  ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
+    try {
+      const { username, password } = matchedData(req);
+      const user = <IUser>await userService.getUser(username);
+
+      if (!user) {
+        return res.sendStatus(404);
       }
-    } else {
-      res.status(400).send('Missing username or password');
+
+      const isValid = await userService.comparePassword(
+        password,
+        user.password
+      );
+
+      if (isValid) {
+        const newTokens = await userService.generateToken(user);
+        return res.status(200).send(newTokens);
+      } else {
+        return res.status(401).send('Invalid credentials');
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500);
     }
   }
 
@@ -83,11 +80,9 @@ export class UserController {
 
   //Provides a list of all users
   public async getAllUsers(req: TypedRequest, res: Express.Response) {
+    const { page, limit } = matchedData(req, { locations: ['query'] });
     try {
-      const users = await userService.getAllUsers(
-        parseInt(req.query.page),
-        parseInt(req.query.limit)
-      );
+      const users = await userService.getAllUsers(page, limit);
       res.status(200).send(users);
     } catch (err) {
       console.log(err);
@@ -97,8 +92,9 @@ export class UserController {
 
   //Provides data of a user with provided id
   public async getUser(req: TypedRequest, res: Express.Response) {
+    const { id } = matchedData(req);
     try {
-      const user = await userService.getUser(req.params.id);
+      const user = await userService.getUserById(id);
       if (user) {
         res.status(200).send(user);
       } else {
@@ -112,8 +108,9 @@ export class UserController {
 
   //Deletes a user with provided id
   public async removeUser(req: TypedRequest, res: Express.Response) {
+    const { id } = matchedData(req);
     try {
-      const user = await userService.removeUser(req.params.id);
+      const user = await userService.removeUser(id);
       if (user) {
         res.status(200).send(user);
       } else {
@@ -125,68 +122,19 @@ export class UserController {
     }
   }
 
-  //Validates a refresh token and fetches user data if valid
-  public async refreshToken(
-    req: TypedRequest,
-    res: Express.Response,
-    next: Express.NextFunction
-  ) {
-    const token = req.headers.authorization;
-    if (token) {
-      jwt.verify(token, TOKEN_KEY, async (err, decoded) => {
-        if (err) {
-          console.log(err);
-          res.status(400);
-        } else {
-          try {
-            const user = await userService.getUserById(
-              (decoded as JwtPayload).id
-            );
-            if (user) {
-              if (user.compareToken(token)) {
-                req.body.user = user;
-                next();
-              } else {
-                res.status(401).send('Invalid token');
-              }
-            } else {
-              res.status(404).send('User not found');
-            }
-          } catch (err) {
-            console.log(err);
-            res.status(400);
-          }
-        }
-      });
-    } else {
-      res.status(401).send('Unauthorized');
-    }
-  }
-
-  //Generates a new set of tokens for the user
-  //New refresh token is stored and old one is invalidated
-  public async generateToken(req: TypedRequest, res: Express.Response) {
-    const accessToken = jwt.sign(
-      {
-        id: req.body.user.id,
-        username: req.body.user.username,
-        isAdmin: req.body.user.isAdmin,
-      },
-      TOKEN_KEY,
-      { expiresIn: '15m' }
-    );
-    const refreshToken = jwt.sign({ id: req.body.user.id }, TOKEN_KEY, {
-      expiresIn: '30m',
-    });
+  public async refreshToken(req: TypedRequest, res: Express.Response) {
+    const { authorization } = matchedData(req);
     try {
-      if (!req.body.user.id) {
-        return res.status(400).send('Please provide user id');
+      const newTokens = await userService.refreshToken(authorization);
+      res.send(newTokens);
+    } catch (err: Error | unknown) {
+      if (err instanceof Error) {
+        if (err.message == 'Invalid token') {
+          res.status(401).send('Invalid token');
+        } else if (err.message == '500') {
+          res.status(500);
+        }
       }
-      await userService.updateRefreshToken(req.body.user.id, refreshToken);
-      res.status(200).send({ accessToken, refreshToken });
-    } catch (err) {
-      console.log(err);
-      res.status(400);
     }
   }
 }
