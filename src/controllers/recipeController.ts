@@ -9,7 +9,7 @@ const recipeService = new RecipeService();
 export class RecipeController {
   // Returns a list of all recipes
   public async getAllRecipes(req: TypedRequest, res: Express.Response) {
-    const { page, limit } = matchedData(req, { locations: ['query'] });
+    const { page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getAllRecipes(page, limit);
       res.status(200).send(recipes);
@@ -20,7 +20,7 @@ export class RecipeController {
   }
   // Returns a recipe with provided id
   public async getRecipe(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
+    const { id } = matchedData(req);
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
@@ -35,8 +35,7 @@ export class RecipeController {
   }
   // Returns a list of all recipes for logged in user
   public async getRecipesByOwner(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
-    const { page, limit } = matchedData(req, { locations: ['query'] });
+    const { id, page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByOwner(id, page, limit);
       res.status(200).send(recipes);
@@ -47,8 +46,7 @@ export class RecipeController {
   }
   // Creates a new recipe
   public async createRecipe(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
-    const { title, body } = matchedData(req, { locations: ['body'] });
+    const { id, title, body } = matchedData(req);
     try {
       const recipe = await recipeService.createRecipe(id, title, body);
       res.status(201).send(recipe);
@@ -59,8 +57,7 @@ export class RecipeController {
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
-    const { body } = matchedData(req, { locations: ['body'] });
+    const { id, body } = matchedData(req);
     try {
       const recipe = await recipeService.updateRecipe(id, body);
       if (recipe) {
@@ -82,7 +79,7 @@ export class RecipeController {
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
   public async removeRecipe(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
+    const { id } = matchedData(req);
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
@@ -110,8 +107,7 @@ export class RecipeController {
   }
   // Returns a list of recipes satisfying the search query in the title
   public async searchRecipes(req: TypedRequest, res: Express.Response) {
-    const { query } = matchedData(req, { locations: ['params'] });
-    const { page, limit } = matchedData(req, { locations: ['query'] });
+    const { query, page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByTitle(query, page, limit);
       res.status(200).send(recipes);

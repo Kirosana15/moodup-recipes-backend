@@ -20,7 +20,7 @@ export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
   public async register(req: TypedRequest, res: Express.Response) {
-    const { username, password } = matchedData(req, { locations: ['body'] });
+    const { username, password } = matchedData(req);
     if (password && username) {
       const hashed = await bcrypt.hash(password, 10);
       try {
@@ -44,15 +44,15 @@ export class UserController {
     res: Express.Response
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
-      const body = matchedData(req, { locations: ['body'] });
-      const user = await userService.getUser(body.username);
+      const { username, password } = matchedData(req);
+      const user = await userService.getUser(username);
 
       if (!user) {
         return res.sendStatus(404);
       }
 
       const isValid = await userService.comparePassword(
-        body.password,
+        password,
         user.password
       );
 
@@ -91,7 +91,7 @@ export class UserController {
 
   //Provides data of a user with provided id
   public async getUser(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
+    const { id } = matchedData(req);
     try {
       const user = await userService.getUserById(id);
       if (user) {
@@ -107,7 +107,7 @@ export class UserController {
 
   //Deletes a user with provided id
   public async removeUser(req: TypedRequest, res: Express.Response) {
-    const id = matchedData(req, { locations: ['params'] }).id;
+    const { id } = matchedData(req);
     try {
       const user = await userService.removeUser(id);
       if (user) {
@@ -122,9 +122,9 @@ export class UserController {
   }
 
   public async refreshToken(req: TypedRequest, res: Express.Response) {
-    const token = matchedData(req, { locations: ['headers'] }).authorization;
+    const { authorization } = matchedData(req);
     try {
-      const newTokens = await userService.refreshToken(token);
+      const newTokens = await userService.refreshToken(authorization);
       res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
