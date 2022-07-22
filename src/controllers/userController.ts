@@ -20,10 +20,11 @@ export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
   public async register(req: TypedRequest, res: Express.Response) {
-    if (req.body.password && req.body.username) {
-      const hashed = await bcrypt.hash(req.body.password, 10);
+    const { username, password } = matchedData(req, { locations: ['body'] });
+    if (password && username) {
+      const hashed = await bcrypt.hash(password, 10);
       try {
-        const user = await userService.createUser(req.body.username, hashed);
+        const user = await userService.createUser(username, hashed);
         res.status(201).send(user);
       } catch (err: MongoError | unknown) {
         if ((<MongoError>err).code === 11000) {
@@ -43,22 +44,21 @@ export class UserController {
     res: Express.Response
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
-      const user = await userService.getUser(req.body.username);
+      const body = matchedData(req, { locations: ['body'] });
+      const user = await userService.getUser(body.username);
 
       if (!user) {
         return res.sendStatus(404);
       }
 
       const isValid = await userService.comparePassword(
-        req.body.password,
+        body.password,
         user.password
       );
 
       if (isValid) {
-        const { accessToken, refreshToken } = await userService.generateToken(
-          user
-        );
-        return res.status(200).send({ accessToken, refreshToken });
+        const newTokens = await userService.generateToken(user);
+        return res.status(200).send(newTokens);
       } else {
         return res.status(401).send('Invalid credentials');
       }
@@ -79,11 +79,9 @@ export class UserController {
 
   //Provides a list of all users
   public async getAllUsers(req: TypedRequest, res: Express.Response) {
+    const { page, limit } = matchedData(req, { locations: ['query'] });
     try {
-      const users = await userService.getAllUsers(
-        parseInt(req.query.page),
-        parseInt(req.query.limit)
-      );
+      const users = await userService.getAllUsers(page, limit);
       res.status(200).send(users);
     } catch (err) {
       console.log(err);
@@ -93,8 +91,9 @@ export class UserController {
 
   //Provides data of a user with provided id
   public async getUser(req: TypedRequest, res: Express.Response) {
+    const id = matchedData(req, { locations: ['params'] }).id;
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user = await userService.getUserById(id);
       if (user) {
         res.status(200).send(user);
       } else {
@@ -108,8 +107,9 @@ export class UserController {
 
   //Deletes a user with provided id
   public async removeUser(req: TypedRequest, res: Express.Response) {
+    const id = matchedData(req, { locations: ['params'] }).id;
     try {
-      const user = await userService.removeUser(req.params.id);
+      const user = await userService.removeUser(id);
       if (user) {
         res.status(200).send(user);
       } else {
@@ -122,10 +122,9 @@ export class UserController {
   }
 
   public async refreshToken(req: TypedRequest, res: Express.Response) {
+    const token = matchedData(req, { locations: ['headers'] }).authorization;
     try {
-      const newTokens = await userService.refreshToken(
-        matchedData(req, { locations: ['headers'] }).authorization
-      );
+      const newTokens = await userService.refreshToken(token);
       res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
