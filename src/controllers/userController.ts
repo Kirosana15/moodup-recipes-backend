@@ -6,7 +6,6 @@ import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
 import { matchedData } from 'express-validator';
 import { IUser } from '../interfaces/user';
-import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 
 const userService = new UserService();
 
@@ -30,16 +29,14 @@ export class UserController {
         res.status(201).send(user);
       } catch (err: MongoError | unknown) {
         if ((<MongoError>err).code === 11000) {
-          res.status(StatusCodes.BAD_REQUEST).send('User already exists');
+          res.status(400).send('User already exists');
         } else {
           console.log(err);
-          res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+          res.status(400);
         }
       }
     } else {
-      res.status(StatusCodes.BAD_REQUEST).send('Missing username or password');
+      res.status(400).send('Missing username or password');
     }
   }
   //Authenticate a user with provided username and password
@@ -52,7 +49,7 @@ export class UserController {
       const user = <IUser>await userService.getUser(username);
 
       if (!user) {
-        return res.sendStatus(StatusCodes.NOT_FOUND);
+        return res.sendStatus(404);
       }
 
       const isValid = await userService.comparePassword(
@@ -62,22 +59,22 @@ export class UserController {
 
       if (isValid) {
         const newTokens = await userService.generateToken(user);
-        return res.send(newTokens);
+        return res.status(200).send(newTokens);
       } else {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
+        return res.status(401).send('Invalid credentials');
       }
     } catch (err) {
       console.log(err);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      return res.status(500);
     }
   }
 
   //Provides logged in user data to the client
   public getProfile(req: TypedRequest, res: Express.Response) {
     if (req.body.user) {
-      res.send(req.body.user);
+      res.status(200).send(req.body.user);
     } else {
-      res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+      res.status(401).send('Unauthorized');
     }
   }
 
@@ -86,12 +83,10 @@ export class UserController {
     const { page, limit } = matchedData(req, { locations: ['query'] });
     try {
       const users = await userService.getAllUsers(page, limit);
-      res.send(users);
+      res.status(200).send(users);
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(400);
     }
   }
 
@@ -101,15 +96,13 @@ export class UserController {
     try {
       const user = await userService.getUserById(id);
       if (user) {
-        res.status(StatusCodes.OK).send(user);
+        res.status(200).send(user);
       } else {
-        res.status(StatusCodes.NOT_FOUND).send('User not found');
+        res.status(404).send('User not found');
       }
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(400);
     }
   }
 
@@ -119,15 +112,13 @@ export class UserController {
     try {
       const user = await userService.removeUser(id);
       if (user) {
-        res.status(StatusCodes.OK).send(user);
+        res.status(200).send(user);
       } else {
-        res.status(StatusCodes.NOT_FOUND).send('User not found');
+        res.status(404).send('User not found');
       }
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(400);
     }
   }
 
@@ -139,9 +130,9 @@ export class UserController {
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
         if (err.message == 'Invalid token') {
-          res.status(StatusCodes.UNAUTHORIZED).send('Invalid token');
+          res.status(401).send('Invalid token');
         } else if (err.message == '500') {
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+          res.status(500);
         }
       }
     }
