@@ -2,6 +2,7 @@ import { matchedData } from 'express-validator';
 import RecipeService from '../services/recipeService';
 import Express from 'express';
 import { TypedRequest } from '../interfaces/typedRequest';
+import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 
 const recipeService = new RecipeService();
 
@@ -12,10 +13,12 @@ export class RecipeController {
     const { page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getAllRecipes(page, limit);
-      res.status(200).send(recipes);
+      res.status(StatusCodes.OK).send(recipes);
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Returns a recipe with provided id
@@ -24,13 +27,15 @@ export class RecipeController {
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
-        res.status(200).send(recipe);
+        res.status(StatusCodes.OK).send(recipe);
       } else {
-        res.status(404).send('Recipe not found');
+        res.status(StatusCodes.NOT_FOUND).send('Recipe not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Returns a list of all recipes for logged in user
@@ -38,10 +43,12 @@ export class RecipeController {
     const { id, page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByOwner(id, page, limit);
-      res.status(200).send(recipes);
+      res.status(StatusCodes.OK).send(recipes);
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Creates a new recipe
@@ -49,10 +56,12 @@ export class RecipeController {
     const { id, title, body } = matchedData(req);
     try {
       const recipe = await recipeService.createRecipe(id, title, body);
-      res.status(201).send(recipe);
+      res.status(StatusCodes.CREATED).send(recipe);
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
@@ -65,16 +74,18 @@ export class RecipeController {
           recipe.ownerId.toString() === req.body.user.id ||
           req.body.user.isAdmin
         ) {
-          res.status(200).send(recipe);
+          res.status(StatusCodes.OK).send(recipe);
         } else {
-          res.status(403).send('Unauthorized');
+          res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
         }
       } else {
-        res.status(404).send('Recipe not found');
+        res.status(StatusCodes.NOT_FOUND).send('Recipe not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
@@ -89,20 +100,24 @@ export class RecipeController {
         ) {
           try {
             const removed = await recipeService.removeRecipe(id);
-            res.status(200).send(removed);
+            res.status(StatusCodes.OK).send(removed);
           } catch (err) {
             console.log(err);
-            res.status(400);
+            res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
           }
         } else {
-          res.status(403).send('Unauthorized');
+          res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
         }
       } else {
-        res.status(404).send('Recipe not found');
+        res.status(StatusCodes.NOT_FOUND).send('Recipe not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Returns a list of recipes satisfying the search query in the title
@@ -110,10 +125,12 @@ export class RecipeController {
     const { query, page, limit } = matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByTitle(query, page, limit);
-      res.status(200).send(recipes);
+      res.status(StatusCodes.OK).send(recipes);
     } catch (err) {
       console.log(err);
-      res.status(400);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 }
