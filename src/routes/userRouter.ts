@@ -63,12 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post(
-  '/login',
-  validate(validateLogin),
-  userController.login
-  // userController.generateToken
-);
+router.post('/login', validate(validateLogin), userController.login);
 
 /**
  * @swagger
