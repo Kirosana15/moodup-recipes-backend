@@ -1,15 +1,17 @@
 import RecipeService from '../services/recipeService';
+import Express from 'express';
+import { TypedRequest } from '../interfaces/typedRequest';
 
 const recipeService = new RecipeService();
 
 // RecipeController class for recipe related requests
-class RecipeController {
+export class RecipeController {
   // Returns a list of all recipes
-  public async getAllRecipes(req: any, res: any) {
+  public async getAllRecipes(req: TypedRequest, res: Express.Response) {
     try {
       const recipes = await recipeService.getAllRecipes(
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {
@@ -18,7 +20,7 @@ class RecipeController {
     }
   }
   // Returns a recipe with provided id
-  public async getRecipe(req: any, res: any) {
+  public async getRecipe(req: TypedRequest, res: Express.Response) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
       if (recipe) {
@@ -32,12 +34,15 @@ class RecipeController {
     }
   }
   // Returns a list of all recipes for logged in user
-  public async getRecipesByOwner(req: any, res: any) {
+  public async getRecipesByOwner(req: TypedRequest, res: Express.Response) {
     try {
+      if (!req.body.user.id) {
+        return res.status(400).send('Provide user id');
+      }
       const recipes = await recipeService.getRecipesByOwner(
-        req.user.id,
-        req.query.page,
-        req.query.limit
+        req.body.user.id,
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {
@@ -46,10 +51,13 @@ class RecipeController {
     }
   }
   // Creates a new recipe
-  public async createRecipe(req: any, res: any) {
+  public async createRecipe(req: TypedRequest, res: Express.Response) {
     try {
+      if (!req.body.user.id) {
+        return res.status(400).send('Provide user id');
+      }
       const recipe = await recipeService.createRecipe(
-        req.user.id,
+        req.body.user.id,
         req.body.title,
         req.body.body
       );
@@ -60,14 +68,17 @@ class RecipeController {
     }
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
-  public async updateRecipe(req: any, res: any) {
+  public async updateRecipe(req: TypedRequest, res: Express.Response) {
     try {
       const recipe = await recipeService.updateRecipe(
         req.params.id,
         req.body.body
       );
       if (recipe) {
-        if (recipe.ownerId.toString() === req.user.id || req.user.isAdmin) {
+        if (
+          recipe.ownerId.toString() === req.body.user.id ||
+          req.body.user.isAdmin
+        ) {
           res.status(200).send(recipe);
         } else {
           res.status(403).send('Unauthorized');
@@ -81,11 +92,14 @@ class RecipeController {
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
-  public async removeRecipe(req: any, res: any) {
+  public async removeRecipe(req: TypedRequest, res: Express.Response) {
     try {
       const recipe = await recipeService.getRecipe(req.params.id);
       if (recipe) {
-        if (recipe.ownerId.toString() === req.user.id || req.user.isAdmin) {
+        if (
+          recipe.ownerId.toString() === req.body.user.id ||
+          req.body.user.isAdmin
+        ) {
           try {
             const removed = await recipeService.removeRecipe(req.params.id);
             res.status(200).send(removed);
@@ -105,12 +119,12 @@ class RecipeController {
     }
   }
   // Returns a list of recipes satisfying the search query in the title
-  public async searchRecipes(req: any, res: any) {
+  public async searchRecipes(req: TypedRequest, res: Express.Response) {
     try {
       const recipes = await recipeService.getRecipesByTitle(
         req.params.query,
-        req.query.page,
-        req.query.limit
+        parseInt(req.query.page),
+        parseInt(req.query.limit)
       );
       res.status(200).send(recipes);
     } catch (err) {

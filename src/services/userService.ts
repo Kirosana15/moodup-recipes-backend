@@ -1,7 +1,6 @@
 //Service for database operations on the "users" collection
 
-import mongoose from 'mongoose';
-const User = mongoose.model('User');
+import { User } from '../models/userModel';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -26,7 +25,7 @@ class UserService {
     return User.findByIdAndRemove(id).exec();
   }
 
-  public getAllUsers(page: number = 1, limit: number = 10) {
+  public getAllUsers(page = 1, limit = 10) {
     return User.find({}, '_id username isAdmin created')
       .skip((page - 1) * limit)
       .limit(limit)
