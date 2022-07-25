@@ -37,9 +37,9 @@ class RecipeService {
   }
   public updateRecipe(
     id: string,
-    title?: string,
-    imageUrl?: string,
-    body?: string
+    title: string,
+    imageUrl: string,
+    body: string
   ) {
     return Recipe.findByIdAndUpdate(
       id,

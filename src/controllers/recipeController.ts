@@ -84,7 +84,12 @@ export class RecipeController {
           recipe.ownerId.toString() === req.body.user.id ||
           req.body.user.isAdmin
         ) {
-          const newRecipe = await recipeService.updateRecipe(id, title, body);
+          const newRecipe = await recipeService.updateRecipe(
+            id,
+            title,
+            imageUrl,
+            body
+          );
           res.send(newRecipe);
         } else {
           res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
