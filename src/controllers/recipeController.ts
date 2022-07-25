@@ -40,9 +40,13 @@ export class RecipeController {
   }
   // Returns a list of all recipes for logged in user
   public async getRecipesByOwner(req: TypedRequest, res: Express.Response) {
-    const { id, page, limit } = matchedData(req);
+    const { user, page, limit } = matchedData(req);
     try {
-      const recipes = await recipeService.getRecipesByOwner(id, page, limit);
+      const recipes = await recipeService.getRecipesByOwner(
+        user.id,
+        page,
+        limit
+      );
       res.status(StatusCodes.OK).send(recipes);
     } catch (err) {
       console.log(err);
@@ -53,10 +57,10 @@ export class RecipeController {
   }
   // Creates a new recipe
   public async createRecipe(req: TypedRequest, res: Express.Response) {
-    const { id, title, imageUrl, body } = matchedData(req);
+    const { user, title, imageUrl, body } = matchedData(req);
     try {
       const recipe = await recipeService.createRecipe(
-        id,
+        user.id,
         title,
         imageUrl,
         body
