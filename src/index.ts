@@ -140,9 +140,13 @@ const swaggerOptions = {
               type: 'string',
               description: 'Title of the recipe',
             },
-            description: {
+            imageUrl: {
               type: 'string',
-              description: 'Description of the recipe',
+              description: 'Link to an image',
+            },
+            body: {
+              type: 'string',
+              description: 'Body of the recipe',
             },
           },
         },

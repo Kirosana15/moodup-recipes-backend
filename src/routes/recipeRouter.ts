@@ -159,14 +159,13 @@ router.get(
  *     security:
  *       - JWT: []
  *     parameters:
- *       - name: id
- *         description: Id of the recipe
- *         in: path
- *         required: true
- *       - name: body
- *         description: An updated body of the recipe
+ *       - name: New recipe
+ *         type: object
+ *         description: Values to update
  *         in: body
  *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/NewRecipe'
  *     responses:
  *       200:
  *         description: Returns an updated recipe
