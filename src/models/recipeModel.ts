@@ -18,6 +18,10 @@ const recipeSchema = new Schema<IRecipe>({
     type: String,
     required: true,
   },
+  imageUrl: {
+    type: String,
+    default: 'https://placekitten.com/150/150',
+  },
   body: {
     type: String,
     required: true,

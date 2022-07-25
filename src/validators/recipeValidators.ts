@@ -8,6 +8,7 @@ const validateTitle = body('title')
   .trim()
   .stripLow(false)
   .escape();
+const validateImageUrl = body('imageUrl').optional().isURL().escape();
 const validateBody = body('body')
   .isLength({ min: 20, max: 1000 })
   .trim()
@@ -26,11 +27,14 @@ export const validateGetAllRecipes: ValidationChain[] = [
 
 export const validateCreateRecipe: ValidationChain[] = [
   validateTitle,
+  validateImageUrl,
   validateBody,
 ];
 
 export const validateUpdateRecipe: ValidationChain[] = [
   validateId,
+  validateTitle,
+  validateImageUrl,
   validateBody,
 ];
 
