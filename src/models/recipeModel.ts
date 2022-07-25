@@ -4,6 +4,7 @@ interface IRecipe {
   _id: Types.ObjectId;
   ownerId: Types.ObjectId;
   title: string;
+  imageUrl: string;
   body: string;
   createdAt: Date;
 }
