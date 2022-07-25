@@ -15,24 +15,24 @@ class RecipeService {
   public getRecipe(id: string) {
     return Recipe.findById(
       id,
-      '_id ownerId title imageUrl body created'
+      '_id ownerId title imageUrl body createdAt'
     ).exec();
   }
   public getAllRecipes(page = 1, limit = 10) {
-    return Recipe.find({}, '_id ownerId title imageUrl body created')
+    return Recipe.find({}, '_id ownerId title imageUrl body createdAt')
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .exec();
   }
   public getRecipesByOwner(ownerId: string | undefined, page = 1, limit = 10) {
     return Recipe.find(
       { ownerId: ownerId },
-      '_id ownerId title imageUrl body created'
+      '_id ownerId title imageUrl body createdAt'
     )
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .exec();
   }
   public updateRecipe(
@@ -58,11 +58,11 @@ class RecipeService {
   public getRecipesByTitle(title: string, page = 1, limit = 10) {
     return Recipe.find(
       { title: { $regex: title, $options: 'i' } },
-      '_id ownerId title imageUrl body created'
+      '_id ownerId title imageUrl body createdAt'
     )
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .exec();
   }
 }
