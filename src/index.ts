@@ -14,7 +14,7 @@ import userRouter from './routes/userRouter';
 import recipeRouter from './routes/recipeRouter';
 
 const PORT = process.env.PORT || 300;
-const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
+const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/';
 
 const app: Application = express();
 
@@ -25,7 +25,7 @@ app.use(express.static('public'));
 
 //database connection
 try {
-  mongoose.connect(DB_URI);
+  mongoose.connect(DB_URI, { dbName: 'dev' });
   console.log('Connected to MongoDB');
 } catch (err) {
   console.log(err);
