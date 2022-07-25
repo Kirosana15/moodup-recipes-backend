@@ -14,7 +14,7 @@ import userRouter from './routes/userRouter';
 import recipeRouter from './routes/recipeRouter';
 
 const PORT = process.env.PORT || 300;
-const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/test';
+const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
 
 const app: Application = express();
 
