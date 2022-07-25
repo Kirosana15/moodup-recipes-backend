@@ -89,7 +89,7 @@ router.post('/login', validate(validateLogin), userController.login);
  *         schema:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/UserBasicData'
  */
 router.get(
   '/users',
@@ -120,6 +120,16 @@ router.get(
  *         description: Returns user information
  *         schema:
  *           $ref: '#/components/schemas/User'
+ */
+router.get(
+  '/users/:id',
+  authController.authorizeUser,
+  validate(validateGetUser),
+  userController.getUser
+);
+/**
+ * @swagger
+ * /users/{id}:
  *   delete:
  *     tags:
  *       - Users
@@ -132,13 +142,12 @@ router.get(
  *       - name: id
  *         description: Id of the user
  *         in: path
+ *     responses:
+ *       200:
+ *         description: Returns deleted users' information
+ *         schema:
+ *           $ref: '#/components/schemas/User'
  */
-router.get(
-  '/users/:id',
-  authController.authorizeUser,
-  validate(validateGetUser),
-  userController.getUser
-);
 router.delete(
   '/users/:id',
   authController.authorizeUser,
@@ -162,7 +171,7 @@ router.delete(
  *       200:
  *         description: Returns profile of a logged in user
  *         schema:
- *           $ref: '#/components/schemas/User'
+ *           $ref: '#/components/schemas/TokenData'
  */
 router.get('/profile', authController.authorizeUser, userController.getProfile);
 
@@ -181,7 +190,7 @@ router.get('/profile', authController.authorizeUser, userController.getProfile);
  *       200:
  *         description: Returns new tokens
  *         schema:
- *           $ref: '#/components/schemas/User'
+ *           $ref: '#/components/schemas/Tokens'
  */
 router.post(
   '/refresh-token',

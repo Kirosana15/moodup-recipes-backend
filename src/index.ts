@@ -65,6 +65,48 @@ const swaggerOptions = {
       schemas: {
         User: m2s(User),
         Recipe: m2s(Recipe),
+        UserBasicData: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: "Users' id",
+            },
+            username: {
+              type: 'string',
+              description: 'Name of the user',
+            },
+            isAdmin: {
+              type: 'boolean',
+              description: 'Whether user is an admin',
+            },
+          },
+        },
+        TokenData: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+              description: "Users' id",
+            },
+            username: {
+              type: 'string',
+              description: 'Name of the user',
+            },
+            isAdmin: {
+              type: 'boolean',
+              description: 'Whether user is an admin',
+            },
+            iat: {
+              type: 'number',
+              description: 'When token was issued',
+            },
+            exp: {
+              type: 'number',
+              description: 'When token expires',
+            },
+          },
+        },
         Login: {
           type: 'object',
           properties: {
