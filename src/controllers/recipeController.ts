@@ -1,16 +1,24 @@
 import { matchedData } from 'express-validator';
 import RecipeService from '../services/recipeService';
 import Express from 'express';
-import { TypedRequest } from '../interfaces/typedRequest';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import {
+  createRecipeDto,
+  getAllRecipesDto,
+  updateRecipeDto,
+  getRecipeDto,
+  getRecipesByOwnerDto,
+  removeRecipeDto,
+  searchRecipesDto,
+} from '../interfaces/dto/recipeDtos';
 
 const recipeService = new RecipeService();
 
 // RecipeController class for recipe related requests
 export class RecipeController {
   // Returns a list of all recipes
-  public async getAllRecipes(req: TypedRequest, res: Express.Response) {
-    const { page, limit } = matchedData(req);
+  public async getAllRecipes(req: Express.Request, res: Express.Response) {
+    const { page, limit } = <getAllRecipesDto>matchedData(req);
     try {
       const recipes = await recipeService.getAllRecipes(page, limit);
       res.status(StatusCodes.OK).send(recipes);
@@ -22,8 +30,8 @@ export class RecipeController {
     }
   }
   // Returns a recipe with provided id
-  public async getRecipe(req: TypedRequest, res: Express.Response) {
-    const { id } = matchedData(req);
+  public async getRecipe(req: Express.Request, res: Express.Response) {
+    const { id } = <getRecipeDto>matchedData(req);
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
@@ -39,8 +47,8 @@ export class RecipeController {
     }
   }
   // Returns a list of all recipes for logged in user
-  public async getRecipesByOwner(req: TypedRequest, res: Express.Response) {
-    const { user, page, limit } = matchedData(req);
+  public async getRecipesByOwner(req: Express.Request, res: Express.Response) {
+    const { user, page, limit } = <getRecipesByOwnerDto>matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByOwner(
         user.id,
@@ -56,8 +64,8 @@ export class RecipeController {
     }
   }
   // Creates a new recipe
-  public async createRecipe(req: TypedRequest, res: Express.Response) {
-    const { user, title, imageUrl, body } = matchedData(req);
+  public async createRecipe(req: Express.Request, res: Express.Response) {
+    const { user, title, imageUrl, body } = <createRecipeDto>matchedData(req);
     try {
       const recipe = await recipeService.createRecipe(
         user.id,
@@ -74,8 +82,8 @@ export class RecipeController {
     }
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
-  public async updateRecipe(req: TypedRequest, res: Express.Response) {
-    const { id, title, imageUrl, body } = matchedData(req);
+  public async updateRecipe(req: Express.Request, res: Express.Response) {
+    const { id, title, imageUrl, body } = <updateRecipeDto>matchedData(req);
     try {
       const recipe = await recipeService.updateRecipe(
         id,
@@ -109,8 +117,8 @@ export class RecipeController {
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
-  public async removeRecipe(req: TypedRequest, res: Express.Response) {
-    const { id } = matchedData(req);
+  public async removeRecipe(req: Express.Request, res: Express.Response) {
+    const { id } = <removeRecipeDto>matchedData(req);
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
@@ -141,8 +149,8 @@ export class RecipeController {
     }
   }
   // Returns a list of recipes satisfying the search query in the title
-  public async searchRecipes(req: TypedRequest, res: Express.Response) {
-    const { query, page, limit } = matchedData(req);
+  public async searchRecipes(req: Express.Request, res: Express.Response) {
+    const { query, page, limit } = <searchRecipesDto>matchedData(req);
     try {
       const recipes = await recipeService.getRecipesByTitle(query, page, limit);
       res.status(StatusCodes.OK).send(recipes);
