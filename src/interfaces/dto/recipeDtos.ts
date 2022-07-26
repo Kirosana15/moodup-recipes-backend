@@ -9,6 +9,7 @@ export interface createRecipeDto {
 
 export interface updateRecipeDto {
   id: string;
+  user: IUser;
   title: string;
   imageUrl: string;
   body: string;
@@ -31,6 +32,7 @@ export interface getRecipesByOwnerDto {
 
 export interface removeRecipeDto {
   id: string;
+  user: IUser;
 }
 
 export interface searchRecipesDto {

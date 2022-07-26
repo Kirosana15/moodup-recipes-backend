@@ -83,7 +83,9 @@ export class RecipeController {
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: Express.Request, res: Express.Response) {
-    const { id, title, imageUrl, body } = <updateRecipeDto>matchedData(req);
+    const { id, user, title, imageUrl, body } = <updateRecipeDto>(
+      matchedData(req)
+    );
     try {
       const recipe = await recipeService.updateRecipe(
         id,
@@ -92,10 +94,7 @@ export class RecipeController {
         body
       );
       if (recipe) {
-        if (
-          recipe.ownerId.toString() === req.body.user.id ||
-          req.body.user.isAdmin
-        ) {
+        if (recipe.ownerId.toString() === user.id || user.isAdmin) {
           const newRecipe = await recipeService.updateRecipe(
             id,
             title,
@@ -118,14 +117,11 @@ export class RecipeController {
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
   public async removeRecipe(req: Express.Request, res: Express.Response) {
-    const { id } = <removeRecipeDto>matchedData(req);
+    const { id, user } = <removeRecipeDto>matchedData(req);
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {
-        if (
-          recipe.ownerId.toString() === req.body.user.id ||
-          req.body.user.isAdmin
-        ) {
+        if (recipe.ownerId.toString() === user.id || user.isAdmin) {
           try {
             const removed = await recipeService.removeRecipe(id);
             res.status(StatusCodes.OK).send(removed);

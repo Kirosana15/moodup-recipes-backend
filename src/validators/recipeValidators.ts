@@ -36,6 +36,7 @@ export const validateCreateRecipe: ValidationChain[] = [
 
 export const validateUpdateRecipe: ValidationChain[] = [
   validateId,
+  validateUser,
   validateTitle,
   validateImageUrl,
   validateBody,
@@ -47,5 +48,8 @@ export const validateSearchRecipes: ValidationChain[] = [
   validateLimit,
 ];
 
-export const validateRemoveRecipe: ValidationChain[] = [validateId];
+export const validateRemoveRecipe: ValidationChain[] = [
+  validateId,
+  validateUser,
+];
 export const validateGetRecipe: ValidationChain[] = [validateId];
