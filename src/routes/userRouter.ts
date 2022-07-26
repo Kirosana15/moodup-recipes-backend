@@ -11,6 +11,7 @@ import {
   validateGetUser,
   validateRemoveUser,
   validateRefreshToken,
+  validateGetProfile,
 } from '../validators/userValidators';
 
 const router = express.Router();
@@ -173,7 +174,12 @@ router.delete(
  *         schema:
  *           $ref: '#/components/schemas/TokenData'
  */
-router.get('/profile', authController.authorizeUser, userController.getProfile);
+router.get(
+  '/profile',
+  authController.authorizeUser,
+  validate(validateGetProfile),
+  userController.getProfile
+);
 
 /**
  * @swagger
