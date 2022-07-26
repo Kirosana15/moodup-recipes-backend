@@ -13,6 +13,10 @@ import {
   validateRefreshToken,
   validateGetProfile,
 } from '../validators/userValidators';
+import {
+  validateAuthorizeUser,
+  validateAuthorizeAdmin,
+} from '../validators/authValidators';
 
 const router = express.Router();
 const userController = new UserController();
@@ -94,7 +98,9 @@ router.post('/login', validate(validateLogin), userController.login);
  */
 router.get(
   '/users',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
+  validate(validateAuthorizeAdmin),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
   userController.getAllUsers
@@ -149,9 +155,18 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
+router.get(
+  '/users/:id',
+  validate(validateAuthorizeUser),
+  authController.authorizeUser,
+  validate(validateGetUser),
+  userController.getUser
+);
 router.delete(
   '/users/:id',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
+  validate(validateAuthorizeAdmin),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser
@@ -176,6 +191,7 @@ router.delete(
  */
 router.get(
   '/profile',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateGetProfile),
   userController.getProfile
