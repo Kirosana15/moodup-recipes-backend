@@ -1,6 +1,7 @@
-import UserService from '../../services/userService';
+import { userService } from '../../services/userService';
 import { User } from '../../models/userModel';
 import mongoose from 'mongoose';
+import { IUser } from '../../interfaces/user';
 
 describe('Testing userService', () => {
   beforeAll(async () => {
@@ -24,13 +25,31 @@ describe('Testing userService', () => {
     }
   });
 
-  test('createUser returns new user', async () => {
+  test('save new User in a database', async () => {
     const username = 'jestuser';
     const password = 'jesttest';
     await userService.createUser(username, password);
-    const user = await User.findOne({ username });
+    const user = <IUser>await User.findOne({ username });
     expect(user).toBeDefined();
     expect(user.username).toBe(username);
     expect(user.password).toBe(password);
+  });
+  describe('error thrown when', () => {
+    test('username already exists', async () => {
+      const username = 'dupeuser';
+      const password = 'jesttest';
+      await userService.createUser(username, password);
+      await expect(userService.createUser(username, password)).rejects.toThrow();
+    });
+    test('no username provided', async () => {
+      const username = '';
+      const password = 'jesttest';
+      await expect(userService.createUser(username, password)).rejects.toThrow();
+    });
+    test('no password provided', async () => {
+      const username = 'riskyuser';
+      const password = '';
+      await expect(userService.createUser(username, password)).rejects.toThrow();
+    });
   });
 });
