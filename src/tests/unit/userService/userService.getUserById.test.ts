@@ -23,8 +23,8 @@ describe('Testing getUserById', () => {
     const user = await userService.getUserById(mockId);
     expect(user).toBeNull();
   });
-  test("throws when id isn't provided", () => {
-    expect(userService.getUserById('')).rejects.toThrow();
+  test("throws when id isn't provided", async () => {
+    await expect(userService.getUserById('')).rejects.toThrow();
   });
   test('fetch User by id', async () => {
     const newUser = await new User({
