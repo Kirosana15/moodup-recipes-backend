@@ -7,5 +7,5 @@
     "esModuleInterop": true,
     "sourceMap": true
   },
-  "exclude": ["tests/"]
+  "exclude": ["src/tests/"]
 }
