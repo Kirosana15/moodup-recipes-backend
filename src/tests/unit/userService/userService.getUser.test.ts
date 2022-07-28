@@ -28,10 +28,12 @@ describe('Testing getUser', () => {
     expect(user.username).toBe(mockUsername);
     expect(user.password).toBe(mockPassword);
   });
+
   describe('no user returned when', () => {
     test("username doesn't exists", async () => {
       expect(await userService.getUser(mockUsername)).toBeNull();
     });
+
     test('no username provided', async () => {
       const username = '';
       expect(await userService.getUser(username)).toBeNull();

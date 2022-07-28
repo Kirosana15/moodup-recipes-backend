@@ -19,13 +19,16 @@ describe('Testing getUserById', () => {
   afterAll(() => {
     closeConnection();
   });
+
   test("doesn't return user when id doesn't exist", async () => {
     const user = await userService.getUserById(mockId);
     expect(user).toBeNull();
   });
+
   test("throws when id isn't provided", async () => {
     await expect(userService.getUserById('')).rejects.toThrow();
   });
+
   test('fetch User by id', async () => {
     const newUser = await new User({
       username: mockUsername,
