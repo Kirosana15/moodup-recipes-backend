@@ -1,33 +1,24 @@
 import UserService from '../../../services/userService';
 import { User } from '../../../models/userModel';
-import mongoose from 'mongoose';
 import { IUser } from '../../../interfaces/user';
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
-import { CONN_ERR, DB_URI, DC_ERR } from '../../consts';
+import {
+  clearAllCollections,
+  closeConnection,
+  connectToDb,
+} from '../../consts';
 
 const userService = new UserService();
 
 describe('Testing getUser', () => {
-  beforeAll(async () => {
-    try {
-      const dbName = 'getUser-test';
-      await mongoose.connect(DB_URI, {
-        dbName,
-        autoCreate: true,
-      });
-    } catch (error) {
-      console.log(CONN_ERR);
-    }
+  beforeAll(() => {
+    connectToDb('getUser-test');
   });
-  afterEach(async () => {
-    await User.deleteMany();
+  afterEach(() => {
+    clearAllCollections();
   });
-  afterAll(async () => {
-    try {
-      await mongoose.connection.close();
-    } catch (err) {
-      console.log(DC_ERR);
-    }
+  afterAll(() => {
+    closeConnection();
   });
 
   test('fetch a User in a database', async () => {
