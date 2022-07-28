@@ -31,15 +31,15 @@ describe('Testing createUser', () => {
   describe('error thrown when', () => {
     test('username already exists', async () => {
       await userService.createUser(mockUsername, mockPassword);
-      expect(
+      await expect(
         userService.createUser(mockUsername, mockPassword)
       ).rejects.toThrow();
     });
-    test('no username provided', () => {
-      expect(userService.createUser('', mockPassword)).rejects.toThrow();
+    test('no username provided', async () => {
+      await expect(userService.createUser('', mockPassword)).rejects.toThrow();
     });
-    test('no password provided', () => {
-      expect(userService.createUser(mockUsername, '')).rejects.toThrow();
+    test('no password provided', async () => {
+      await expect(userService.createUser(mockUsername, '')).rejects.toThrow();
     });
   });
 });
