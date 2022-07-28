@@ -33,10 +33,10 @@ class UserService {
   }
 
   public getAllUsers(page = 1, limit = 10) {
-    return User.find({}, '_id username isAdmin created')
+    return User.find({}, '_id username isAdmin createdAt')
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .exec();
   }
 
