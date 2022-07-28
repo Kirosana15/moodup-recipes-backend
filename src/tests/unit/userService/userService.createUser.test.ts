@@ -3,20 +3,20 @@ import { User } from '../../../models/userModel';
 import mongoose from 'mongoose';
 import { IUser } from '../../../interfaces/user';
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
+import { CONN_ERR, DB_URI, DC_ERR } from '../../consts';
 
 const userService = new UserService();
 
 describe('Testing createUser', () => {
   beforeAll(async () => {
     try {
-      const dbUri = 'mongodb://localhost:27017';
-      const dbName = 'createUser-test';
-      await mongoose.connect(dbUri, {
+      const dbName = 'getUser-test';
+      await mongoose.connect(DB_URI, {
         dbName,
         autoCreate: true,
       });
     } catch (error) {
-      console.log('DB connect error');
+      console.log(CONN_ERR);
     }
   });
   afterEach(async () => {
@@ -26,7 +26,7 @@ describe('Testing createUser', () => {
     try {
       await mongoose.connection.close();
     } catch (err) {
-      console.log('DB disconnect error');
+      console.log(DC_ERR);
     }
   });
 
