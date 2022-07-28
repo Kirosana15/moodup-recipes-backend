@@ -15,7 +15,7 @@ export const connectToDb = async (dbName: string) => {
   }
 };
 
-export const clearCollection = async (collection: Model<any>) => {
+export const clearCollection = async (collection: Model<undefined>) => {
   await collection.deleteMany();
 };
 export const clearAllCollections = async () => {
