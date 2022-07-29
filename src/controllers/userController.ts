@@ -5,7 +5,6 @@ import { matchedData } from 'express-validator';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import {
   getAllUsersDto,
-  getProfileDto,
   getUserDto,
   refreshTokenDto,
   registerDto,
@@ -55,7 +54,7 @@ export class UserController {
   }
 
   public getProfile(req: Express.Request, res: Express.Response) {
-    const { user } = <getProfileDto>matchedData(req);
+    const user = req.user;
     if (user) {
       return res.send(user);
     } else {

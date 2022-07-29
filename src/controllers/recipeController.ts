@@ -11,6 +11,7 @@ import {
   removeRecipeDto,
   searchRecipesDto,
 } from '../interfaces/dto/recipeDtos';
+import { IUser } from '../interfaces/user';
 
 const recipeService = new RecipeService();
 
@@ -48,7 +49,11 @@ export class RecipeController {
   }
   // Returns a list of all recipes for logged in user
   public async getRecipesByOwner(req: Express.Request, res: Express.Response) {
-    const { user, page, limit } = <getRecipesByOwnerDto>matchedData(req);
+    const { page, limit } = <getRecipesByOwnerDto>matchedData(req);
+    const user = <IUser>req.user;
+    if (!user) {
+      res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+    }
     try {
       const recipes = await recipeService.getRecipesByOwner(
         user.id,
@@ -65,7 +70,8 @@ export class RecipeController {
   }
   // Creates a new recipe
   public async createRecipe(req: Express.Request, res: Express.Response) {
-    const { user, title, imageUrl, body } = <createRecipeDto>matchedData(req);
+    const { title, imageUrl, body } = <createRecipeDto>matchedData(req);
+    const user = <IUser>req.user;
     try {
       const recipe = await recipeService.createRecipe(
         user.id,
@@ -83,9 +89,8 @@ export class RecipeController {
   }
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: Express.Request, res: Express.Response) {
-    const { id, user, title, imageUrl, body } = <updateRecipeDto>(
-      matchedData(req)
-    );
+    const { id, title, imageUrl, body } = <updateRecipeDto>matchedData(req);
+    const user = <IUser>req.user;
     try {
       const recipe = await recipeService.updateRecipe(
         id,
@@ -117,7 +122,8 @@ export class RecipeController {
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
   public async removeRecipe(req: Express.Request, res: Express.Response) {
-    const { id, user } = <removeRecipeDto>matchedData(req);
+    const { id } = <removeRecipeDto>matchedData(req);
+    const user = <IUser>req.user;
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {

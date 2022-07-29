@@ -1,12 +1,6 @@
-import { IUser } from '../user';
-
 export interface registerDto {
   username: string;
   password: string;
-}
-
-export interface getProfileDto {
-  user: IUser;
 }
 
 export interface getUserDto {

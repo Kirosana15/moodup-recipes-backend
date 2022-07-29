@@ -9,7 +9,6 @@ const validateUsername = body('username')
   .trim();
 const validatePassword = body('password').isLength({ min: 6, max: 200 });
 const validateToken = header('authorization').isJWT();
-const validateUser = body('user').exists();
 
 export const validateRegister: ValidationChain[] = [
   validateUsername,
@@ -26,7 +25,6 @@ export const validateGetAllUsers: ValidationChain[] = [
   validateLimit,
 ];
 
-export const validateGetProfile: ValidationChain[] = [validateUser];
 export const validateGetUser: ValidationChain[] = [validateId];
 export const validateRemoveUser: ValidationChain[] = [validateId];
 export const validateRefreshToken: ValidationChain[] = [validateToken];

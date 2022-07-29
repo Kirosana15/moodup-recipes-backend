@@ -10,7 +10,6 @@ import {
   validateGetUser,
   validateRemoveUser,
   validateRefreshToken,
-  validateGetProfile,
 } from '../validators/userValidators';
 import passport from 'passport';
 
@@ -187,7 +186,6 @@ router.delete(
 router.get(
   '/profile',
   passport.authenticate('bearer', { session: false }),
-  validate(validateGetProfile),
   userController.getProfile
 );
 
