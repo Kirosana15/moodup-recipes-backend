@@ -1,4 +1,4 @@
-import { mockId, mockUser } from '../../mocks/mockUser';
+import { mockUser } from '../../mocks/mockUser';
 import UserService from '../../../services/userService';
 import {
   clearAllCollections,
@@ -40,8 +40,6 @@ describe('testing getAllUsers', () => {
     users = await userService.getAllUsers(undefined, 20);
     expect(users).toHaveLength(20);
     const pagedUsers = await userService.getAllUsers(2, 5);
-    console.log(pagedUsers);
-    console.log(users);
     expect(pagedUsers[0]).toEqual(users[5]);
   });
 });
