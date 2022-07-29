@@ -3,10 +3,18 @@
 import UserService from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
-import { TypedRequest } from '../interfaces/typedRequest';
 import { matchedData } from 'express-validator';
 import { IUser } from '../interfaces/user';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import {
+  getAllUsersDto,
+  getProfileDto,
+  getUserDto,
+  loginDto,
+  refreshTokenDto,
+  registerDto,
+  removeUserDto,
+} from '../interfaces/dto/userDtos';
 
 const userService = new UserService();
 
@@ -21,8 +29,8 @@ interface MongoError {
 export class UserController {
   //Register a new user with provided username and password
   //password is hashed before storing in the database
-  public async register(req: TypedRequest, res: Express.Response) {
-    const { username, password } = matchedData(req);
+  public async register(req: Express.Request, res: Express.Response) {
+    const { username, password } = <registerDto>matchedData(req);
     if (password && username) {
       const hashed = await bcrypt.hash(password, 10);
       try {
@@ -44,11 +52,11 @@ export class UserController {
   }
   //Authenticate a user with provided username and password
   public async login(
-    req: TypedRequest,
+    req: Express.Request,
     res: Express.Response
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
-      const { username, password } = matchedData(req);
+      const { username, password } = <loginDto>matchedData(req);
       const user = <IUser>await userService.getUser(username);
 
       if (!user) {
@@ -73,17 +81,20 @@ export class UserController {
   }
 
   //Provides logged in user data to the client
-  public getProfile(req: TypedRequest, res: Express.Response) {
-    if (req.body.user) {
-      res.send(req.body.user);
+  public getProfile(req: Express.Request, res: Express.Response) {
+    const { user } = <getProfileDto>matchedData(req);
+    if (user) {
+      res.send(user);
     } else {
       res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
     }
   }
 
   //Provides a list of all users
-  public async getAllUsers(req: TypedRequest, res: Express.Response) {
-    const { page, limit } = matchedData(req, { locations: ['query'] });
+  public async getAllUsers(req: Express.Request, res: Express.Response) {
+    const { page, limit } = <getAllUsersDto>(
+      matchedData(req, { locations: ['query'] })
+    );
     try {
       const users = await userService.getAllUsers(page, limit);
       res.send(users);
@@ -96,8 +107,8 @@ export class UserController {
   }
 
   //Provides data of a user with provided id
-  public async getUser(req: TypedRequest, res: Express.Response) {
-    const { id } = matchedData(req);
+  public async getUser(req: Express.Request, res: Express.Response) {
+    const { id } = <getUserDto>matchedData(req);
     try {
       const user = await userService.getUserById(id);
       if (user) {
@@ -114,8 +125,8 @@ export class UserController {
   }
 
   //Deletes a user with provided id
-  public async removeUser(req: TypedRequest, res: Express.Response) {
-    const { id } = matchedData(req);
+  public async removeUser(req: Express.Request, res: Express.Response) {
+    const { id } = <removeUserDto>matchedData(req);
     try {
       const user = await userService.removeUser(id);
       if (user) {
@@ -131,8 +142,8 @@ export class UserController {
     }
   }
 
-  public async refreshToken(req: TypedRequest, res: Express.Response) {
-    const { authorization } = matchedData(req);
+  public async refreshToken(req: Express.Request, res: Express.Response) {
+    const { authorization } = <refreshTokenDto>matchedData(req);
     try {
       const newTokens = await userService.refreshToken(authorization);
       res.send(newTokens);

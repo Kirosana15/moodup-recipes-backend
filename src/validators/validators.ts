@@ -1,10 +1,9 @@
 import { ValidationChain, validationResult } from 'express-validator';
 import express from 'express';
-import { TypedRequest } from '../interfaces/typedRequest';
 
 export const validate = (validations: ValidationChain[]) => {
   return async (
-    req: TypedRequest,
+    req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) => {

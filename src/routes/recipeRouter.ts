@@ -13,6 +13,10 @@ import {
   validateRemoveRecipe,
   validateSearchRecipes,
 } from '../validators/recipeValidators';
+import {
+  validateAuthorizeUser,
+  validateAuthorizeAdmin,
+} from '../validators/authValidators';
 
 const router = express.Router();
 
@@ -47,6 +51,7 @@ const authController = new AuthController();
  */
 router.get(
   '/recipes',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateGetRecipes),
   recipeController.getRecipesByOwner
@@ -79,6 +84,7 @@ router.get(
  */
 router.post(
   '/recipes',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateCreateRecipe),
   recipeController.createRecipe
@@ -112,7 +118,9 @@ router.post(
  */
 router.get(
   '/recipes/all',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
+  validate(validateAuthorizeAdmin),
   authController.authorizeAdmin,
   validate(validateGetAllRecipes),
   recipeController.getAllRecipes
@@ -142,6 +150,7 @@ router.get(
  */
 router.get(
   '/recipes/:id',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateGetRecipe),
   recipeController.getRecipe
@@ -174,6 +183,7 @@ router.get(
  */
 router.put(
   '/recipes/:id',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateUpdateRecipe),
   recipeController.updateRecipe
@@ -203,6 +213,7 @@ router.put(
  */
 router.delete(
   '/recipes/:id',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateRemoveRecipe),
   recipeController.removeRecipe
@@ -232,6 +243,7 @@ router.delete(
  */
 router.get(
   '/recipes/search/:query',
+  validate(validateAuthorizeUser),
   authController.authorizeUser,
   validate(validateSearchRecipes),
   recipeController.searchRecipes
