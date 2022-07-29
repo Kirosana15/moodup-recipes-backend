@@ -14,6 +14,7 @@ import { Recipe } from './models/recipeModel';
 import mongoose from 'mongoose';
 import userRouter from './routes/userRouter';
 import recipeRouter from './routes/recipeRouter';
+import { bearerStrategy } from './strategies/bearer';
 
 const PORT = process.env.PORT || 300;
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
@@ -27,6 +28,7 @@ app.use(express.static('public'));
 
 passport.initialize();
 passport.use(basicStrategy);
+passport.use(bearerStrategy);
 
 //database connection
 try {

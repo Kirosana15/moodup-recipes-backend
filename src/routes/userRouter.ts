@@ -98,9 +98,7 @@ router.post(
  */
 router.get(
   '/users',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateAuthorizeAdmin),
+  passport.authenticate('bearer', { session: false }),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
   userController.getAllUsers
@@ -157,16 +155,13 @@ router.get(
  */
 router.get(
   '/users/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  passport.authenticate('bearer', { session: false }),
   validate(validateGetUser),
   userController.getUser
 );
 router.delete(
   '/users/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateAuthorizeAdmin),
+  passport.authenticate('bearer', { session: false }),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser
@@ -191,8 +186,7 @@ router.delete(
  */
 router.get(
   '/profile',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  passport.authenticate('bearer', { session: false }),
   validate(validateGetProfile),
   userController.getProfile
 );

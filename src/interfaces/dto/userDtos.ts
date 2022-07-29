@@ -5,11 +5,6 @@ export interface registerDto {
   password: string;
 }
 
-export interface loginDto {
-  username: string;
-  password: string;
-}
-
 export interface getProfileDto {
   user: IUser;
 }

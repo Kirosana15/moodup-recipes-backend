@@ -7,12 +7,10 @@ import {
   getAllUsersDto,
   getProfileDto,
   getUserDto,
-  loginDto,
   refreshTokenDto,
   registerDto,
   removeUserDto,
 } from '../interfaces/dto/userDtos';
-import { IUser } from '../interfaces/user';
 import { AuthenticatedBasicRequest } from '../interfaces/requests';
 
 const userService = new UserService();
