@@ -2,7 +2,6 @@ import UserService from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { matchedData } from 'express-validator';
-import { IUser } from '../interfaces/user';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import {
   getAllUsersDto,
@@ -13,6 +12,8 @@ import {
   registerDto,
   removeUserDto,
 } from '../interfaces/dto/userDtos';
+import { IUser } from '../interfaces/user';
+import { AuthenticatedBasicRequest } from '../interfaces/requests';
 
 const userService = new UserService();
 
@@ -45,27 +46,14 @@ export class UserController {
   }
 
   public async login(
-    req: Express.Request,
+    req: AuthenticatedBasicRequest,
     res: Express.Response,
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
-    try {
-      const { username, password } = <loginDto>matchedData(req);
-      const user = <IUser>await userService.getUser(username);
-
-      if (!user) {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
-      }
-      const isValid = await userService.comparePassword(password, user.password);
-      if (isValid) {
-        const newTokens = await userService.generateToken(user);
-        return res.send(newTokens);
-      } else {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
-      }
-    } catch (err) {
-      console.log(err);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+    if (!req.user) {
+      return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
     }
+    const newTokens = await userService.generateToken(req.user);
+    return res.send(newTokens);
   }
 
   public getProfile(req: Express.Request, res: Express.Response) {

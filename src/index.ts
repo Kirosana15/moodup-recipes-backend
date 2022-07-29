@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import m2s from 'mongoose-to-swagger';
+import passport from 'passport';
+import { basicStrategy } from './strategies/basic';
 
 import { User } from './models/userModel';
 import { Recipe } from './models/recipeModel';
@@ -22,6 +24,9 @@ const app: Application = express();
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.static('public'));
+
+passport.initialize();
+passport.use(basicStrategy);
 
 //database connection
 try {

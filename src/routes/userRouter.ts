@@ -5,7 +5,6 @@ import { UserController } from '../controllers/userController';
 import AuthController from '../controllers/authController';
 import { validate } from '../validators/validators';
 import {
-  validateLogin,
   validateRegister,
   validateGetAllUsers,
   validateGetUser,
@@ -13,10 +12,7 @@ import {
   validateRefreshToken,
   validateGetProfile,
 } from '../validators/userValidators';
-import {
-  validateAuthorizeUser,
-  validateAuthorizeAdmin,
-} from '../validators/authValidators';
+import passport from 'passport';
 
 const router = express.Router();
 const userController = new UserController();
@@ -68,7 +64,11 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post('/login', validate(validateLogin), userController.login);
+router.post(
+  '/login',
+  passport.authenticate('basic', { session: false }),
+  userController.login
+);
 
 /**
  * @swagger
