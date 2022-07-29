@@ -1,8 +1,6 @@
 import { BasicStrategy } from 'passport-http';
 import { IUser } from '../interfaces/user';
-import UserService from '../services/userService';
-
-const userService = new UserService();
+import { userService } from '../services/userService';
 
 export const basicStrategy = new BasicStrategy(
   async (username: string, password: string, done) => {

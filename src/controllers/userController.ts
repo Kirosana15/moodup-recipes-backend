@@ -1,18 +1,13 @@
-import UserService from '../services/userService';
+//Controller for user authentication
+
+import { userService } from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
-import {
-  getAllUsersDto,
-  getUserDto,
-  refreshTokenDto,
-  registerDto,
-  removeUserDto,
-} from '../interfaces/dto/userDtos';
+import { getAllUsersDto, getUserDto, registerDto, removeUserDto } from '../interfaces/dto/userDtos';
 import { AuthenticatedBasicRequest } from '../interfaces/requests';
-
-const userService = new UserService();
+import { IUser } from '../interfaces/user';
 
 interface MongoError {
   index: string;
@@ -104,10 +99,10 @@ export class UserController {
   }
 
   public async refreshToken(req: Express.Request, res: Express.Response) {
-    const { authorization } = <refreshTokenDto>matchedData(req);
+    const user = <IUser>req.user;
     try {
-      const newTokens = await userService.refreshToken(authorization);
-      return res.send(newTokens);
+      const newTokens = await userService.generateToken(user);
+      res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
         if (err.message == 'Invalid token') {

@@ -9,7 +9,6 @@ import {
   validateGetAllUsers,
   validateGetUser,
   validateRemoveUser,
-  validateRefreshToken,
 } from '../validators/userValidators';
 import passport from 'passport';
 
@@ -65,7 +64,7 @@ router.post('/register', validate(validateRegister), userController.register);
  */
 router.post(
   '/login',
-  passport.authenticate('basic', { session: false }),
+  passport.authenticate('login', { session: false }),
   userController.login
 );
 
@@ -97,7 +96,7 @@ router.post(
  */
 router.get(
   '/users',
-  passport.authenticate('bearer', { session: false }),
+  passport.authenticate('access-token', { session: false }),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
   userController.getAllUsers
@@ -154,13 +153,13 @@ router.get(
  */
 router.get(
   '/users/:id',
-  passport.authenticate('bearer', { session: false }),
+  passport.authenticate('access-token', { session: false }),
   validate(validateGetUser),
   userController.getUser
 );
 router.delete(
   '/users/:id',
-  passport.authenticate('bearer', { session: false }),
+  passport.authenticate('access-token', { session: false }),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser
@@ -185,7 +184,7 @@ router.delete(
  */
 router.get(
   '/profile',
-  passport.authenticate('bearer', { session: false }),
+  passport.authenticate('access-token', { session: false }),
   userController.getProfile
 );
 
@@ -208,7 +207,7 @@ router.get(
  */
 router.post(
   '/refresh-token',
-  validate(validateRefreshToken),
+  passport.authenticate('refresh-token', { session: false }),
   userController.refreshToken
 );
 

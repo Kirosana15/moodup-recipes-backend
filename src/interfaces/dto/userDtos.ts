@@ -15,7 +15,3 @@ export interface getAllUsersDto {
   page: number;
   limit: number;
 }
-
-export interface refreshTokenDto {
-  authorization: string;
-}
