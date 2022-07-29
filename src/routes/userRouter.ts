@@ -126,7 +126,7 @@ router.get(
  */
 router.get(
   '/users/:id',
-  authController.authorizeUser,
+  passport.authenticate('access-token', { session: false }),
   validate(validateGetUser),
   userController.getUser
 );
