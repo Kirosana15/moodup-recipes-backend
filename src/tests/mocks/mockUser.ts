@@ -1,17 +1,28 @@
 import { faker } from '@faker-js/faker';
+import { IUser, UserPayload } from '../../interfaces/user';
+import { User } from '../../models/userModel';
 
 export const mockUsername = faker.internet.userName();
 export const mockPassword = faker.internet.password();
 export const mockId = faker.database.mongodbObjectId();
 export const mockToken = faker.datatype.string(30);
 
-export class mockUser {
-  public username: string;
-  public password: string;
-  public createdAt: Date;
-  constructor() {
-    this.username = faker.internet.userName();
-    this.password = faker.internet.password();
-    this.createdAt = faker.date.past();
-  }
-}
+export const generateUser = (): UserPayload => {
+  return {
+    username: faker.internet.userName(),
+    password: faker.internet.password(),
+    createdAt: faker.date.past(),
+  };
+};
+
+export const generateUsers = (n: number): UserPayload[] => {
+  return Array.from(Array(n), generateUser);
+};
+
+export const saveUser = async (): Promise<IUser> => {
+  return <IUser>await new User(generateUser()).save();
+};
+
+export const saveUsers = async (n: number): Promise<IUser[]> => {
+  return <IUser[]>await User.insertMany(generateUsers(n));
+};

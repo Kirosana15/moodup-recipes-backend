@@ -2,25 +2,11 @@ import UserService from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { IUser } from '../../../interfaces/user';
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
-import {
-  clearAllCollections,
-  closeConnection,
-  connectToDb,
-} from '../../consts';
+import { setupTests } from '../../setupTests';
 
 const userService = new UserService();
 
-describe('Testing getUser', () => {
-  beforeAll(() => {
-    connectToDb('getUser-test');
-  });
-  afterEach(() => {
-    clearAllCollections();
-  });
-  afterAll(() => {
-    closeConnection();
-  });
-
+setupTests('getUser', () => {
   test('fetch a User in a database', async () => {
     await new User({ username: mockUsername, password: mockPassword }).save();
     const user = <IUser>await userService.getUser(mockUsername);

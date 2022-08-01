@@ -1,25 +1,11 @@
 import UserService from '../../../services/userService';
 import { mockPassword } from '../../mocks/mockUser';
-import {
-  clearAllCollections,
-  closeConnection,
-  connectToDb,
-} from '../../consts';
+import { setupTests } from '../../setupTests';
 import bcrypt from 'bcrypt';
 
 const userService = new UserService();
 
-describe('Testing comparePassword', () => {
-  beforeAll(() => {
-    connectToDb('comparePassword-test');
-  });
-  afterEach(() => {
-    clearAllCollections();
-  });
-  afterAll(() => {
-    closeConnection();
-  });
-
+setupTests('comparePassword', () => {
   test('returns true if the password matches hashed password', async () => {
     const hashedPassword = await bcrypt.hash(mockPassword, 10);
     expect(

@@ -1,40 +1,21 @@
-import { mockUser } from '../../mocks/mockUser';
+import { saveUsers } from '../../mocks/mockUser';
 import UserService from '../../../services/userService';
-import {
-  clearAllCollections,
-  closeConnection,
-  connectToDb,
-} from '../../consts';
-import { User } from '../../../models/userModel';
+import { setupTests } from '../../setupTests';
 
 const userService = new UserService();
 
-describe('testing getAllUsers', () => {
-  beforeAll(async () => {
-    connectToDb('getAllUsers-test');
-  });
-  afterEach(async () => {
-    clearAllCollections();
-  });
-  afterAll(() => {
-    closeConnection();
-  });
-
+setupTests('getAllUsers', () => {
   test('returns existing users', async () => {
-    await new User(new mockUser()).save();
-    await new User(new mockUser()).save();
-    await new User(new mockUser()).save();
+    await saveUsers(3);
     const users = await userService.getAllUsers();
     expect(users).toHaveLength(3);
   });
   test('returns empty array if no users present', async () => {
     const users = await userService.getAllUsers();
-    expect(users).toHaveLength(0);
+    expect(users).toEqual([]);
   });
   test('return paginated results', async () => {
-    for (let i = 0; i < 20; i++) {
-      await new User(new mockUser()).save();
-    }
+    await saveUsers(20);
     let users = await userService.getAllUsers();
     expect(users).toHaveLength(10);
     users = await userService.getAllUsers(undefined, 20);

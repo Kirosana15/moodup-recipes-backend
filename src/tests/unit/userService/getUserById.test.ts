@@ -1,25 +1,11 @@
 import { mockId, mockPassword, mockUsername } from '../../mocks/mockUser';
 import UserService from '../../../services/userService';
-import {
-  clearAllCollections,
-  closeConnection,
-  connectToDb,
-} from '../../consts';
 import { User } from '../../../models/userModel';
+import { setupTests } from '../../setupTests';
 
 const userService = new UserService();
 
-describe('Testing getUserById', () => {
-  beforeAll(async () => {
-    connectToDb('getUserById-test');
-  });
-  afterEach(async () => {
-    clearAllCollections();
-  });
-  afterAll(() => {
-    closeConnection();
-  });
-
+setupTests('getUserById', () => {
   test("doesn't return user when id doesn't exist", async () => {
     const user = await userService.getUserById(mockId);
     expect(user).toBeNull();

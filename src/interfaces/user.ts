@@ -6,3 +6,5 @@ export interface IUser {
   refreshToken?: string;
   createdAt: Date;
 }
+
+export type UserPayload = Omit<IUser, 'id'>;

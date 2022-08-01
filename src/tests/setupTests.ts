@@ -1,9 +1,5 @@
 import mongoose, { Model } from 'mongoose';
-
-export const DB_URI = 'mongodb://localhost:27017';
-export const CONN_ERR = 'DB connect error';
-export const DC_ERR = 'DB disconnect error';
-export const MATCH_JWT = /^(?:[\w-]+\.){2}[\w-]+$/; //matches a JWT token
+import { DB_URI, CONN_ERR } from './constants';
 
 export const connectToDb = async (dbName: string) => {
   try {
@@ -36,4 +32,19 @@ const removeAllCollections = async () => {
 export const closeConnection = async () => {
   await removeAllCollections();
   mongoose.disconnect();
+};
+
+export const setupTests = (testName: string, runTests: () => void) => {
+  describe(`Testing ${testName}`, () => {
+    beforeAll(() => {
+      connectToDb(`${testName}-test`);
+    });
+    afterEach(() => {
+      clearAllCollections();
+    });
+    afterAll(() => {
+      closeConnection();
+    });
+    runTests();
+  });
 };
