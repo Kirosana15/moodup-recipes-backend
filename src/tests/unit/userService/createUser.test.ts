@@ -1,3 +1,4 @@
+import { User } from '../../../models/userModel';
 import UserService from '../../../services/userService';
 
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
@@ -22,5 +23,11 @@ setupTests('createUser', () => {
     test('no password provided', async () => {
       await expect(userService.createUser(mockUsername, '')).rejects.toThrow();
     });
+  });
+
+  test('runs User.save()', async () => {
+    const spyUser = jest.spyOn(User.prototype, 'save');
+    await userService.createUser(mockUsername, mockPassword);
+    expect(spyUser).toBeCalledTimes(1);
   });
 });
