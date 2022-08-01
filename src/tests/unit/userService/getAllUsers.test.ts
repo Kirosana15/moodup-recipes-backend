@@ -10,10 +10,12 @@ setupTests('getAllUsers', () => {
     const users = await userService.getAllUsers();
     expect(users).toHaveLength(3);
   });
+
   test('returns empty array if no users present', async () => {
     const users = await userService.getAllUsers();
     expect(users).toEqual([]);
   });
+
   test('return paginated results', async () => {
     await saveUsers(20);
     let users = await userService.getAllUsers();
@@ -22,5 +24,13 @@ setupTests('getAllUsers', () => {
     expect(users).toHaveLength(20);
     const pagedUsers = await userService.getAllUsers(2, 5);
     expect(pagedUsers[0]).toEqual(users[5]);
+  });
+
+  test('results are sorted by descending creation time', async () => {
+    await saveUsers(5);
+    const users = await userService.getAllUsers();
+    expect(users[0].createdAt.getTime()).toBeGreaterThan(
+      users[1].createdAt.getTime()
+    );
   });
 });
