@@ -36,14 +36,14 @@ export const closeConnection = async () => {
 
 export const setupTests = (testName: string, runTests: () => void) => {
   describe(`Testing ${testName}`, () => {
-    beforeAll(() => {
-      connectToDb(`${testName}-test`);
+    beforeAll(async () => {
+      await connectToDb(`${testName}-test`);
     });
-    afterEach(() => {
-      clearAllCollections();
+    afterEach(async () => {
+      await clearAllCollections();
     });
-    afterAll(() => {
-      closeConnection();
+    afterAll(async () => {
+      await closeConnection();
     });
     runTests();
   });
