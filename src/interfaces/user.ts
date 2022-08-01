@@ -8,6 +8,7 @@ export interface IUser {
   createdAt: Date;
 }
 
+export type UserPayload = Omit<IUser, 'id'>;
 declare global {
   namespace Express {
     interface User extends IUser {
