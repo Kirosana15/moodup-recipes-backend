@@ -8,9 +8,9 @@ export const mockImage = faker.image.food();
 export const mockBody = faker.commerce.productDescription();
 export const mockDate = faker.date.past();
 
-export const generateRecipe = (): RecipePayload => {
+export const generateRecipe = (ownerId?: string): RecipePayload => {
   return {
-    ownerId: faker.database.mongodbObjectId(),
+    ownerId: ownerId || faker.database.mongodbObjectId(),
     title: `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`,
     imageUrl: faker.image.food(),
     body: faker.commerce.productDescription(),
@@ -18,14 +18,22 @@ export const generateRecipe = (): RecipePayload => {
   };
 };
 
-export const generateRecipes = (n: number): RecipePayload[] => {
-  return Array.from(Array(n), generateRecipe);
+export const generateRecipes = (
+  n: number,
+  ownerId?: string
+): RecipePayload[] => {
+  return Array.from(Array(n), () => {
+    return generateRecipe(ownerId);
+  });
 };
 
-export const saveRecipe = async (): Promise<IRecipe> => {
-  return <IRecipe>await new Recipe(generateRecipe()).save();
+export const saveRecipe = async (ownerId?: string): Promise<IRecipe> => {
+  return <IRecipe>await new Recipe(generateRecipe(ownerId)).save();
 };
 
-export const saveRecipes = async (n: number): Promise<IRecipe[]> => {
-  return <IRecipe[]>await Recipe.insertMany(generateRecipes(n));
+export const saveRecipes = async (
+  n: number,
+  ownerId?: string
+): Promise<IRecipe[]> => {
+  return <IRecipe[]>await Recipe.insertMany(generateRecipes(n, ownerId));
 };
