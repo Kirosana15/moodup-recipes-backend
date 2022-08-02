@@ -12,7 +12,7 @@ import { setupTests } from '../../setupTests';
 const recipeService = new RecipeService();
 
 setupTests('updateRecipe', () => {
-  test('returns the updated recipe', async () => {
+  test('should return the updated recipe', async () => {
     const newRecipe = await saveRecipe();
     const recipe = await recipeService.updateRecipe(
       newRecipe._id,
@@ -25,7 +25,7 @@ setupTests('updateRecipe', () => {
     expect(recipe?.body).toBe(mockBody);
   });
 
-  test('changes recipe in a database', async () => {
+  test('should change recipe in a database', async () => {
     const newRecipe = await saveRecipe();
     await recipeService.updateRecipe(
       newRecipe._id,
@@ -39,7 +39,7 @@ setupTests('updateRecipe', () => {
     expect(recipe?.body).toBe(mockBody);
   });
 
-  test("doesn't return the recipe if id doesn't exist", async () => {
+  test('should not return a recipe if id does not exist', async () => {
     const recipe = await recipeService.updateRecipe(
       mockId,
       mockTitle,
