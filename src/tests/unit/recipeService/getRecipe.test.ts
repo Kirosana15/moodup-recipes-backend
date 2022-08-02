@@ -15,7 +15,7 @@ import { setupTests } from '../../setupTests';
 const recipeService = new RecipeService();
 
 setupTests('getRecipe', () => {
-  test('gets _id, ownerId, title, imageUrl, body and createdAt of a recipe with specified Id', async () => {
+  test('should return a recipe with specified Id', async () => {
     const newRecipe = <IRecipe>await new Recipe({
       ownerId: mockId,
       title: mockTitle,
@@ -31,11 +31,13 @@ setupTests('getRecipe', () => {
     expect(recipe?.body).toBe(mockBody);
     expect(recipe?.createdAt).toStrictEqual(mockDate);
   });
-  test("doesn't return recipe when id doesn't exists", async () => {
-    expect(await recipeService.getRecipe(mockId)).toBeNull();
-  });
+  describe('should not return recipe', () => {
+    test('when id does not exists', async () => {
+      expect(await recipeService.getRecipe(mockId)).toBeNull();
+    });
 
-  test('no id provided', async () => {
-    await expect(recipeService.getRecipe('')).rejects.toThrow();
+    test('when no id is provided', async () => {
+      await expect(recipeService.getRecipe('')).rejects.toThrow();
+    });
   });
 });
