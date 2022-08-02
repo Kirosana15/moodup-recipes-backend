@@ -29,6 +29,7 @@ setupTests('login-e2e', () => {
           refreshToken: mockToken,
         });
       });
+
     test('with set of tokens for a logged in user', async () => {
       const res = await request(app)
         .post('/login')
@@ -40,6 +41,7 @@ setupTests('login-e2e', () => {
       expect(res.body.accessToken).toBe(mockToken);
       expect(res.body.refreshToken).toBe(mockToken);
     });
+
     test(`with ${StatusCodes.BAD_REQUEST} when username is not provided`, async () => {
       const res = await request(app)
         .post('/login')
@@ -50,6 +52,7 @@ setupTests('login-e2e', () => {
       expect(comparePasswordSpy).not.toBeCalled();
       expect(res.body.errors).toBeDefined();
     });
+
     test(`with ${StatusCodes.BAD_REQUEST} when password is not provided`, async () => {
       const res = await request(app)
         .post('/login')
@@ -60,6 +63,7 @@ setupTests('login-e2e', () => {
       expect(comparePasswordSpy).not.toBeCalled();
       expect(res.body.errors).toBeDefined();
     });
+
     test(`with ${StatusCodes.UNAUTHORIZED} and error message "Invalid credentials" when wrong credentials are entered`, async () => {
       getUserSpy.mockImplementationOnce(() => Promise.resolve(null));
       const resNoUser = await request(app)
@@ -79,12 +83,23 @@ setupTests('login-e2e', () => {
       expect(resNoUser.text).toEqual(resBadPassword.text);
       expect(resNoUser.text).toEqual('Invalid credentials');
     });
+
+    test(`with ${StatusCodes.INTERNAL_SERVER_ERROR} when userService throws an error`, () => {
+      comparePasswordSpy.mockRejectedValueOnce(new Error(''));
+      request(app)
+        .post('/login')
+        .send({ username: mockUsername, password: mockPassword })
+        .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+        .end();
+    });
+
     test(`with ${StatusCodes.BAD_REQUEST} when username validation fails`, async () => {
       await request(app)
         .post('/login')
         .send({ username: 'Mo', password: mockPassword })
         .expect(StatusCodes.BAD_REQUEST);
     });
+
     test(`with ${StatusCodes.BAD_REQUEST} when password validation fails`, async () => {
       await request(app)
         .post('/login')
