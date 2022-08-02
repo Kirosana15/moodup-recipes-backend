@@ -60,5 +60,17 @@ setupTests('register-e2e', () => {
       expect(errRes.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
       expect(createSpy).toThrow();
     });
+    test(`with ${StatusCodes.BAD_REQUEST} when username validation fails`, async () => {
+      await request(app)
+        .post('/register')
+        .send({ username: 'Mo', password: mockPassword })
+        .expect(StatusCodes.BAD_REQUEST);
+    });
+    test(`with ${StatusCodes.BAD_REQUEST} when password validation fails`, async () => {
+      await request(app)
+        .post('/register')
+        .send({ username: mockUsername, password: 'pass' })
+        .expect(StatusCodes.BAD_REQUEST);
+    });
   });
 });
