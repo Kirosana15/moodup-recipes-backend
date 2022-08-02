@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { IUser, UserPayload } from '../../interfaces/user';
 import { User } from '../../models/userModel';
 
-export const mockUsername = faker.internet.userName();
+export const mockUsername = faker.name.firstName();
 export const mockPassword = faker.internet.password();
 export const mockId = faker.database.mongodbObjectId();
 export const mockToken = faker.datatype.string(30);
