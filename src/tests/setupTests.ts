@@ -40,6 +40,7 @@ export const setupTests = (testName: string, runTests: () => void) => {
       await connectToDb(`${testName}-test`);
     });
     afterEach(async () => {
+      jest.clearAllMocks();
       await clearAllCollections();
     });
     afterAll(async () => {
