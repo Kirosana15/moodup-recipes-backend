@@ -5,18 +5,13 @@ import { UserController } from '../controllers/userController';
 import AuthController from '../controllers/authController';
 import { validate } from '../validators/validators';
 import {
-  validateLogin,
   validateRegister,
   validateGetAllUsers,
   validateGetUser,
   validateRemoveUser,
-  validateRefreshToken,
-  validateGetProfile,
 } from '../validators/userValidators';
-import {
-  validateAuthorizeUser,
-  validateAuthorizeAdmin,
-} from '../validators/authValidators';
+import { Strategy } from '../interfaces/strategy';
+import { authService } from '../services/authService';
 
 const router = express.Router();
 const userController = new UserController();
@@ -68,7 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post('/login', validate(validateLogin), userController.login);
+router.post('/login', authService.authenticate(Strategy.Basic), userController.login);
 
 /**
  * @swagger
@@ -98,12 +93,10 @@ router.post('/login', validate(validateLogin), userController.login);
  */
 router.get(
   '/users',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateAuthorizeAdmin),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
-  userController.getAllUsers
+  userController.getAllUsers,
 );
 
 /**
@@ -128,12 +121,7 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.get(
-  '/users/:id',
-  authController.authorizeUser,
-  validate(validateGetUser),
-  userController.getUser
-);
+router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 /**
  * @swagger
  * /users/{id}:
@@ -155,21 +143,13 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.get(
-  '/users/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateGetUser),
-  userController.getUser
-);
+router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 router.delete(
   '/users/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateAuthorizeAdmin),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
-  userController.removeUser
+  userController.removeUser,
 );
 
 /**
@@ -189,13 +169,7 @@ router.delete(
  *         schema:
  *           $ref: '#/components/schemas/TokenData'
  */
-router.get(
-  '/profile',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateGetProfile),
-  userController.getProfile
-);
+router.get('/profile', authService.authenticate(Strategy.Bearer), userController.getProfile);
 
 /**
  * @swagger
@@ -214,10 +188,6 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post(
-  '/refresh-token',
-  validate(validateRefreshToken),
-  userController.refreshToken
-);
+router.post('/refresh-token', authService.authenticate(Strategy.RefreshBearer), userController.refreshToken);
 
 export default router;

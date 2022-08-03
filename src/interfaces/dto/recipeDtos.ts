@@ -1,41 +1,35 @@
-import { IUser } from '../user';
-
-export interface createRecipeDto {
-  user: IUser;
+export interface CreateRecipeDto {
   title: string;
   imageUrl: string;
   body: string;
 }
 
-export interface updateRecipeDto {
+export interface UpdateRecipeDto {
   id: string;
-  user: IUser;
   title: string;
   imageUrl: string;
   body: string;
 }
 
-export interface getAllRecipesDto {
+export interface GetAllRecipesDto {
   page: number;
   limit: number;
 }
 
-export interface getRecipeDto {
+export interface GetRecipeDto {
   id: string;
 }
 
-export interface getRecipesByOwnerDto {
-  user: IUser;
+export interface GetRecipesByOwnerDto {
   page: number;
   limit: number;
 }
 
-export interface removeRecipeDto {
+export interface RemoveRecipeDto {
   id: string;
-  user: IUser;
 }
 
-export interface searchRecipesDto {
+export interface SearchRecipesDto {
   query: string;
   page: number;
   limit: number;

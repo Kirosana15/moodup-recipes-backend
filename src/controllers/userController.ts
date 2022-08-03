@@ -1,20 +1,13 @@
-import UserService from '../services/userService';
+//Controller for user authentication
+
+import { userService } from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
 import { matchedData } from 'express-validator';
-import { IUser } from '../interfaces/user';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
-import {
-  getAllUsersDto,
-  getProfileDto,
-  getUserDto,
-  loginDto,
-  refreshTokenDto,
-  registerDto,
-  removeUserDto,
-} from '../interfaces/dto/userDtos';
-
-const userService = new UserService();
+import { GetAllUsersDto, GetUserDto, RegisterDto, RemoveUserDto } from '../interfaces/dto/userDtos';
+import { AuthenticatedBasicRequest } from '../interfaces/requests';
+import { IUser } from '../interfaces/user';
 
 interface MongoError {
   index: string;
@@ -25,7 +18,7 @@ interface MongoError {
 
 export class UserController {
   public async register(req: Express.Request, res: Express.Response) {
-    const { username, password } = <registerDto>matchedData(req);
+    const { username, password } = <RegisterDto>matchedData(req);
     if (password && username) {
       const hashed = await bcrypt.hash(password, 10);
       try {
@@ -45,23 +38,15 @@ export class UserController {
   }
 
   public async login(
-    req: Express.Request,
+    req: AuthenticatedBasicRequest,
     res: Express.Response,
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
-      const { username, password } = <loginDto>matchedData(req);
-      const user = <IUser>await userService.getUser(username);
-
-      if (!user) {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
+      if (!req.user) {
+        return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
       }
-      const isValid = await userService.comparePassword(password, user.password);
-      if (isValid) {
-        const newTokens = await userService.generateToken(user);
-        return res.send(newTokens);
-      } else {
-        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
-      }
+      const newTokens = await userService.generateTokens(req.user);
+      return res.send(newTokens);
     } catch (err) {
       console.log(err);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
@@ -69,7 +54,7 @@ export class UserController {
   }
 
   public getProfile(req: Express.Request, res: Express.Response) {
-    const { user } = <getProfileDto>matchedData(req);
+    const user = req.user;
     if (user) {
       return res.send(user);
     } else {
@@ -78,7 +63,7 @@ export class UserController {
   }
 
   public async getAllUsers(req: Express.Request, res: Express.Response) {
-    const { page, limit } = <getAllUsersDto>matchedData(req, { locations: ['query'] });
+    const { page, limit } = <GetAllUsersDto>matchedData(req, { locations: ['query'] });
     try {
       const users = await userService.getAllUsers(page, limit);
       return res.send(users);
@@ -89,7 +74,7 @@ export class UserController {
   }
 
   public async getUser(req: Express.Request, res: Express.Response) {
-    const { id } = <getUserDto>matchedData(req);
+    const { id } = <GetUserDto>matchedData(req);
     try {
       const user = await userService.getUserById(id);
       if (user) {
@@ -104,7 +89,7 @@ export class UserController {
   }
 
   public async removeUser(req: Express.Request, res: Express.Response) {
-    const { id } = <removeUserDto>matchedData(req);
+    const { id } = <RemoveUserDto>matchedData(req);
     try {
       const user = await userService.removeUser(id);
       if (user) {
@@ -119,10 +104,10 @@ export class UserController {
   }
 
   public async refreshToken(req: Express.Request, res: Express.Response) {
-    const { authorization } = <refreshTokenDto>matchedData(req);
+    const user = <IUser>req.user;
     try {
-      const newTokens = await userService.refreshToken(authorization);
-      return res.send(newTokens);
+      const newTokens = await userService.generateTokens(user);
+      res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
         if (err.message == 'Invalid token') {

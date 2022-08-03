@@ -13,10 +13,8 @@ import {
   validateRemoveRecipe,
   validateSearchRecipes,
 } from '../validators/recipeValidators';
-import {
-  validateAuthorizeUser,
-  validateAuthorizeAdmin,
-} from '../validators/authValidators';
+import { authService } from '../services/authService';
+import { Strategy } from '../interfaces/strategy';
 
 const router = express.Router();
 
@@ -51,10 +49,9 @@ const authController = new AuthController();
  */
 router.get(
   '/recipes',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateGetRecipes),
-  recipeController.getRecipesByOwner
+  recipeController.getRecipesByOwner,
 );
 
 /**
@@ -84,10 +81,9 @@ router.get(
  */
 router.post(
   '/recipes',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateCreateRecipe),
-  recipeController.createRecipe
+  recipeController.createRecipe,
 );
 
 /**
@@ -118,12 +114,10 @@ router.post(
  */
 router.get(
   '/recipes/all',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
-  validate(validateAuthorizeAdmin),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateGetAllRecipes),
-  recipeController.getAllRecipes
+  recipeController.getAllRecipes,
 );
 
 /**
@@ -150,10 +144,9 @@ router.get(
  */
 router.get(
   '/recipes/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateGetRecipe),
-  recipeController.getRecipe
+  recipeController.getRecipe,
 );
 
 /**
@@ -183,10 +176,9 @@ router.get(
  */
 router.put(
   '/recipes/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateUpdateRecipe),
-  recipeController.updateRecipe
+  recipeController.updateRecipe,
 );
 
 /**
@@ -213,10 +205,9 @@ router.put(
  */
 router.delete(
   '/recipes/:id',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateRemoveRecipe),
-  recipeController.removeRecipe
+  recipeController.removeRecipe,
 );
 
 /**
@@ -243,10 +234,9 @@ router.delete(
  */
 router.get(
   '/recipes/search/:query',
-  validate(validateAuthorizeUser),
-  authController.authorizeUser,
+  authService.authenticate(Strategy.Bearer),
   validate(validateSearchRecipes),
-  recipeController.searchRecipes
+  recipeController.searchRecipes,
 );
 
 export default router;

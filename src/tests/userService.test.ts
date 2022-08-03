@@ -1,8 +1,6 @@
-import UserService from '../services/userService';
+import { userService } from '../services/userService';
 import { User } from '../models/userModel';
 import mongoose from 'mongoose';
-
-const userService = new UserService();
 
 describe('Testing userService', () => {
   beforeAll(async () => {
