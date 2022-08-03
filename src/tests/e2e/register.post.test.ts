@@ -8,69 +8,85 @@ import bcrypt from 'bcrypt';
 import UserService from '../../services/userService';
 
 setupTests('register-e2e', () => {
-  describe('POST /register responds', () => {
-    const createSpy = jest.spyOn(UserService.prototype, 'createUser');
+  describe('POST /register should respond', () => {
+    const createUserSpy = jest
+      .spyOn(UserService.prototype, 'createUser')
+      .mockImplementation((): any => {
+        return Promise.resolve({ username: mockUsername, password: 'hash' });
+      });
+
     test('with created user with hashed password', async () => {
       const res = await request(app)
         .post('/register')
-        .send({ username: mockUsername, password: mockPassword })
-        .expect(StatusCodes.CREATED);
+        .send({ username: mockUsername, password: mockPassword });
+
+      expect(res.statusCode).toBe(StatusCodes.CREATED);
       expect(bcrypt.hash).toBeCalledTimes(1);
-      expect(createSpy).toBeCalledTimes(1);
+      expect(createUserSpy).toBeCalledTimes(1);
       expect(res.body.username).toBe(mockUsername);
       expect(res.body.password).toBe('hash');
     });
+
     test('with 400 when username is not provided', async () => {
       const res = await request(app)
         .post('/register')
-        .send({ password: mockPassword })
-        .expect(StatusCodes.BAD_REQUEST);
+        .send({ password: mockPassword });
+
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
       expect(bcrypt.hash).toBeCalledTimes(0);
       expect(res.body.errors).toBeDefined();
     });
+
     test('with 400 when password is not provided', async () => {
       const res = await request(app)
         .post('/register')
-        .send({ username: mockUsername })
-        .expect(StatusCodes.BAD_REQUEST);
+        .send({ username: mockUsername });
+
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
       expect(bcrypt.hash).toBeCalledTimes(0);
       expect(res.body.errors).toBeDefined();
     });
-    test('with 400 and error message "User already exists"', async () => {
-      await request(app)
-        .post('/register')
-        .send({ username: mockUsername, password: mockPassword })
-        .expect(StatusCodes.CREATED);
-      expect(createSpy).toBeCalledTimes(1);
+
+    test('with 400 and error message "User already exists" when username already in database', async () => {
+      createUserSpy.mockImplementationOnce(() => {
+        return Promise.reject({ code: 11000 });
+      });
       const res = await request(app)
         .post('/register')
-        .send({ username: mockUsername, password: mockPassword })
-        .expect(StatusCodes.BAD_REQUEST);
-      expect(createSpy).toBeCalledTimes(2);
+        .send({ username: mockUsername, password: mockPassword });
+
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+      expect(createUserSpy).toBeCalledTimes(1);
       expect(res.text).toEqual('User already exists');
     });
+
     test('with INTERNAL_SERVER_ERROR when userService throws an error', async () => {
-      createSpy.mockImplementation(() => {
+      createUserSpy.mockImplementation(() => {
         throw { code: 1 };
       });
       const errRes = await request(app)
         .post('/register')
-        .send({ username: mockUsername, password: mockPassword })
-        .expect(StatusCodes.INTERNAL_SERVER_ERROR);
+        .send({ username: mockUsername, password: mockPassword });
+
+      expect(errRes.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(errRes.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
-      expect(createSpy).toThrow();
+      expect(createUserSpy).toThrow();
     });
+
     test(`with ${StatusCodes.BAD_REQUEST} when username validation fails`, async () => {
-      await request(app)
+      const res = await request(app)
         .post('/register')
-        .send({ username: 'Mo', password: mockPassword })
-        .expect(StatusCodes.BAD_REQUEST);
+        .send({ username: 'Mo', password: mockPassword });
+
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
+
     test(`with ${StatusCodes.BAD_REQUEST} when password validation fails`, async () => {
-      await request(app)
+      const res = await request(app)
         .post('/register')
-        .send({ username: mockUsername, password: 'pass' })
-        .expect(StatusCodes.BAD_REQUEST);
+        .send({ username: mockUsername, password: 'pass' });
+
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
   });
 });
