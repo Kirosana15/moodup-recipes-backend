@@ -1,17 +1,17 @@
-export interface registerDto {
+export interface RegisterDto {
   username: string;
   password: string;
 }
 
-export interface getUserDto {
+export interface GetUserDto {
   id: string;
 }
 
-export interface removeUserDto {
+export interface RemoveUserDto {
   id: string;
 }
 
-export interface getAllUsersDto {
+export interface GetAllUsersDto {
   page: number;
   limit: number;
 }

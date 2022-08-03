@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import Express from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
-import { getAllUsersDto, getUserDto, registerDto, removeUserDto } from '../interfaces/dto/userDtos';
+import { GetAllUsersDto, GetUserDto, RegisterDto, RemoveUserDto } from '../interfaces/dto/userDtos';
 import { AuthenticatedBasicRequest } from '../interfaces/requests';
 import { IUser } from '../interfaces/user';
 
@@ -18,7 +18,7 @@ interface MongoError {
 
 export class UserController {
   public async register(req: Express.Request, res: Express.Response) {
-    const { username, password } = <registerDto>matchedData(req);
+    const { username, password } = <RegisterDto>matchedData(req);
     if (password && username) {
       const hashed = await bcrypt.hash(password, 10);
       try {
@@ -41,11 +41,16 @@ export class UserController {
     req: AuthenticatedBasicRequest,
     res: Express.Response,
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
-    if (!req.user) {
-      return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+    try {
+      if (!req.user) {
+        return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+      }
+      const newTokens = await userService.generateTokens(req.user);
+      return res.send(newTokens);
+    } catch (err) {
+      console.log(err);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
-    const newTokens = await userService.generateToken(req.user);
-    return res.send(newTokens);
   }
 
   public getProfile(req: Express.Request, res: Express.Response) {
@@ -58,7 +63,7 @@ export class UserController {
   }
 
   public async getAllUsers(req: Express.Request, res: Express.Response) {
-    const { page, limit } = <getAllUsersDto>matchedData(req, { locations: ['query'] });
+    const { page, limit } = <GetAllUsersDto>matchedData(req, { locations: ['query'] });
     try {
       const users = await userService.getAllUsers(page, limit);
       return res.send(users);
@@ -69,7 +74,7 @@ export class UserController {
   }
 
   public async getUser(req: Express.Request, res: Express.Response) {
-    const { id } = <getUserDto>matchedData(req);
+    const { id } = <GetUserDto>matchedData(req);
     try {
       const user = await userService.getUserById(id);
       if (user) {
@@ -84,7 +89,7 @@ export class UserController {
   }
 
   public async removeUser(req: Express.Request, res: Express.Response) {
-    const { id } = <removeUserDto>matchedData(req);
+    const { id } = <RemoveUserDto>matchedData(req);
     try {
       const user = await userService.removeUser(id);
       if (user) {
@@ -101,7 +106,7 @@ export class UserController {
   public async refreshToken(req: Express.Request, res: Express.Response) {
     const user = <IUser>req.user;
     try {
-      const newTokens = await userService.generateToken(user);
+      const newTokens = await userService.generateTokens(user);
       res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {

@@ -1,35 +1,35 @@
-export interface createRecipeDto {
+export interface CreateRecipeDto {
   title: string;
   imageUrl: string;
   body: string;
 }
 
-export interface updateRecipeDto {
+export interface UpdateRecipeDto {
   id: string;
   title: string;
   imageUrl: string;
   body: string;
 }
 
-export interface getAllRecipesDto {
+export interface GetAllRecipesDto {
   page: number;
   limit: number;
 }
 
-export interface getRecipeDto {
+export interface GetRecipeDto {
   id: string;
 }
 
-export interface getRecipesByOwnerDto {
+export interface GetRecipesByOwnerDto {
   page: number;
   limit: number;
 }
 
-export interface removeRecipeDto {
+export interface RemoveRecipeDto {
   id: string;
 }
 
-export interface searchRecipesDto {
+export interface SearchRecipesDto {
   query: string;
   page: number;
   limit: number;
