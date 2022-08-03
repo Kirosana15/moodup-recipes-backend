@@ -41,9 +41,7 @@ export class UserController {
           res.status(StatusCodes.BAD_REQUEST).send('User already exists');
         } else {
           console.log(err);
-          res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
         }
       }
     } else {
@@ -53,21 +51,16 @@ export class UserController {
   //Authenticate a user with provided username and password
   public async login(
     req: Express.Request,
-    res: Express.Response
+    res: Express.Response,
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
       const { username, password } = <loginDto>matchedData(req);
       const user = <IUser>await userService.getUser(username);
 
       if (!user) {
-        return res.sendStatus(StatusCodes.NOT_FOUND);
+        return res.status(StatusCodes.UNAUTHORIZED).send('Invalid credentials');
       }
-
-      const isValid = await userService.comparePassword(
-        password,
-        user.password
-      );
-
+      const isValid = await userService.comparePassword(password, user.password);
       if (isValid) {
         const newTokens = await userService.generateToken(user);
         return res.send(newTokens);
@@ -76,7 +69,7 @@ export class UserController {
       }
     } catch (err) {
       console.log(err);
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -92,17 +85,13 @@ export class UserController {
 
   //Provides a list of all users
   public async getAllUsers(req: Express.Request, res: Express.Response) {
-    const { page, limit } = <getAllUsersDto>(
-      matchedData(req, { locations: ['query'] })
-    );
+    const { page, limit } = <getAllUsersDto>matchedData(req, { locations: ['query'] });
     try {
       const users = await userService.getAllUsers(page, limit);
       res.send(users);
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -118,9 +107,7 @@ export class UserController {
       }
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -136,9 +123,7 @@ export class UserController {
       }
     } catch (err) {
       console.log(err);
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -152,7 +137,7 @@ export class UserController {
         if (err.message == 'Invalid token') {
           res.status(StatusCodes.UNAUTHORIZED).send('Invalid token');
         } else if (err.message == '500') {
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(StatusCodes.INTERNAL_SERVER_ERROR);
         }
       }
     }
