@@ -40,16 +40,11 @@ class UserService {
       .exec();
   }
 
-  public comparePassword(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
+  public comparePassword(password: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  public async generateToken(
-    user: IUser
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  public async generateTokens(user: IUser): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
       {
         id: user.id,
@@ -57,7 +52,7 @@ class UserService {
         isAdmin: user.isAdmin,
       },
       this.TOKEN_KEY,
-      { expiresIn: '15m' }
+      { expiresIn: '15m' },
     );
     const refreshToken = jwt.sign({ id: user.id }, this.TOKEN_KEY, {
       expiresIn: '30m',

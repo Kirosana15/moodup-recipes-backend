@@ -5,12 +5,8 @@ import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 
 class AuthController {
   // authorizeAdmin checks if the user is an admin
-  public async authorizeAdmin(
-    req: Express.Request,
-    res: Express.Response,
-    next: Express.NextFunction
-  ) {
-    if (req.user && req.user.isAdmin) {
+  public async authorizeAdmin(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
+    if (req.user?.isAdmin) {
       next();
     } else {
       res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
