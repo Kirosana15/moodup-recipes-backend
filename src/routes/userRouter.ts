@@ -10,8 +10,8 @@ import {
   validateGetUser,
   validateRemoveUser,
 } from '../validators/userValidators';
-import passport from 'passport';
 import { Strategy } from '../interfaces/strategy';
+import { authService } from '../services/authService';
 
 const router = express.Router();
 const userController = new UserController();
@@ -63,7 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post('/login', passport.authenticate(Strategy.Basic, { session: false }), userController.login);
+router.post('/login', authService.authenticate(Strategy.Basic), userController.login);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ router.post('/login', passport.authenticate(Strategy.Basic, { session: false }),
  */
 router.get(
   '/users',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
   userController.getAllUsers,
@@ -121,12 +121,7 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.get(
-  '/users/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
-  validate(validateGetUser),
-  userController.getUser,
-);
+router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 /**
  * @swagger
  * /users/{id}:
@@ -148,15 +143,10 @@ router.get(
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.get(
-  '/users/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
-  validate(validateGetUser),
-  userController.getUser,
-);
+router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 router.delete(
   '/users/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser,
@@ -179,7 +169,7 @@ router.delete(
  *         schema:
  *           $ref: '#/components/schemas/TokenData'
  */
-router.get('/profile', passport.authenticate(Strategy.Bearer, { session: false }), userController.getProfile);
+router.get('/profile', authService.authenticate(Strategy.Bearer), userController.getProfile);
 
 /**
  * @swagger
@@ -198,10 +188,6 @@ router.get('/profile', passport.authenticate(Strategy.Bearer, { session: false }
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post(
-  '/refresh-token',
-  passport.authenticate(Strategy.RefreshBearer, { session: false }),
-  userController.refreshToken,
-);
+router.post('/refresh-token', authService.authenticate(Strategy.RefreshBearer), userController.refreshToken);
 
 export default router;

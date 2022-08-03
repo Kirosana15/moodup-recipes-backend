@@ -1,13 +1,24 @@
 import passport from 'passport';
 import { Strategy } from '../interfaces/strategy';
-import { basicStrategy } from '../strategies/basic';
-import { bearerStrategy, refreshBearerStrategy } from '../strategies/bearer';
+import { bearerLogic } from '../strategies/bearer';
+import { refreshBearerLogic } from '../strategies/refreshBearer';
+import { basicLogic } from '../strategies/basic';
+import { Strategy as BearerStrategy } from 'passport-http-bearer';
+import { BasicStrategy } from 'passport-http';
 
-export class AuthService {
-  public initializePassportStrategies() {
-    passport.use(Strategy.Basic, basicStrategy);
-    passport.use(Strategy.Bearer, bearerStrategy);
-    passport.use(Strategy.RefreshBearer, refreshBearerStrategy);
+class AuthService {
+  private basicStrategy = new BasicStrategy(basicLogic);
+  private bearerStrategy = new BearerStrategy(bearerLogic);
+  private refreshBearerStrategy = new BearerStrategy(refreshBearerLogic);
+
+  constructor() {
+    passport.use(Strategy.Basic, this.basicStrategy);
+    passport.use(Strategy.Bearer, this.bearerStrategy);
+    passport.use(Strategy.RefreshBearer, this.refreshBearerStrategy);
+  }
+
+  public authenticate(strategy: Strategy) {
+    return passport.authenticate(strategy, { session: false });
   }
 }
 

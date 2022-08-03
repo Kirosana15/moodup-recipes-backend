@@ -13,7 +13,7 @@ import {
   validateRemoveRecipe,
   validateSearchRecipes,
 } from '../validators/recipeValidators';
-import passport from 'passport';
+import { authService } from '../services/authService';
 import { Strategy } from '../interfaces/strategy';
 
 const router = express.Router();
@@ -49,7 +49,7 @@ const authController = new AuthController();
  */
 router.get(
   '/recipes',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateGetRecipes),
   recipeController.getRecipesByOwner,
 );
@@ -81,7 +81,7 @@ router.get(
  */
 router.post(
   '/recipes',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateCreateRecipe),
   recipeController.createRecipe,
 );
@@ -114,7 +114,7 @@ router.post(
  */
 router.get(
   '/recipes/all',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   authController.authorizeAdmin,
   validate(validateGetAllRecipes),
   recipeController.getAllRecipes,
@@ -144,7 +144,7 @@ router.get(
  */
 router.get(
   '/recipes/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateGetRecipe),
   recipeController.getRecipe,
 );
@@ -176,7 +176,7 @@ router.get(
  */
 router.put(
   '/recipes/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateUpdateRecipe),
   recipeController.updateRecipe,
 );
@@ -205,7 +205,7 @@ router.put(
  */
 router.delete(
   '/recipes/:id',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateRemoveRecipe),
   recipeController.removeRecipe,
 );
@@ -234,7 +234,7 @@ router.delete(
  */
 router.get(
   '/recipes/search/:query',
-  passport.authenticate(Strategy.Bearer, { session: false }),
+  authService.authenticate(Strategy.Bearer),
   validate(validateSearchRecipes),
   recipeController.searchRecipes,
 );
