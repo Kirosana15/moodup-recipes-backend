@@ -5,16 +5,13 @@ import morgan from 'morgan';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import m2s from 'mongoose-to-swagger';
-import passport from 'passport';
-import { basicStrategy } from './strategies/basic';
-
 import { User } from './models/userModel';
 import { Recipe } from './models/recipeModel';
+import { initializePassportStrategies } from './services/authService';
 
 import mongoose from 'mongoose';
 import userRouter from './routes/userRouter';
 import recipeRouter from './routes/recipeRouter';
-import { bearerStrategy, refreshBearerStrategy } from './strategies/bearer';
 
 const PORT = process.env.PORT || 300;
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
@@ -26,10 +23,7 @@ app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 
-passport.initialize();
-passport.use('login', basicStrategy);
-passport.use('access-token', bearerStrategy);
-passport.use('refresh-token', refreshBearerStrategy);
+initializePassportStrategies();
 
 //database connection
 try {
@@ -46,8 +40,7 @@ const swaggerOptions = {
     info: {
       title: 'Recipes API',
       version: '1.0.0',
-      description:
-        'API for storing recipes in mongoDB database and user authentication using JWT',
+      description: 'API for storing recipes in mongoDB database and user authentication using JWT',
     },
     produces: ['application/json'],
     consumes: ['application/json'],
@@ -176,6 +169,6 @@ app
   .listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
   })
-  .on('error', (err) => {
+  .on('error', err => {
     console.log(err);
   });
