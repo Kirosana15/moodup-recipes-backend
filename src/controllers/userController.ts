@@ -35,17 +35,17 @@ export class UserController {
       const hashed = await bcrypt.hash(password, 10);
       try {
         const user = await userService.createUser(username, hashed);
-        res.status(201).send(user);
+        return res.status(201).send(user);
       } catch (err: MongoError | unknown) {
         if ((<MongoError>err).code === 11000) {
-          res.status(StatusCodes.BAD_REQUEST).send('User already exists');
+          return res.status(StatusCodes.BAD_REQUEST).send('User already exists');
         } else {
           console.log(err);
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
         }
       }
     } else {
-      res.status(StatusCodes.BAD_REQUEST).send('Missing username or password');
+      return res.status(StatusCodes.BAD_REQUEST).send('Missing username or password');
     }
   }
   //Authenticate a user with provided username and password
@@ -77,9 +77,9 @@ export class UserController {
   public getProfile(req: Express.Request, res: Express.Response) {
     const { user } = <getProfileDto>matchedData(req);
     if (user) {
-      res.send(user);
+      return res.send(user);
     } else {
-      res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
+      return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
     }
   }
 
@@ -88,10 +88,10 @@ export class UserController {
     const { page, limit } = <getAllUsersDto>matchedData(req, { locations: ['query'] });
     try {
       const users = await userService.getAllUsers(page, limit);
-      res.send(users);
+      return res.send(users);
     } catch (err) {
       console.log(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -101,13 +101,13 @@ export class UserController {
     try {
       const user = await userService.getUserById(id);
       if (user) {
-        res.status(StatusCodes.OK).send(user);
+        return res.status(StatusCodes.OK).send(user);
       } else {
-        res.status(StatusCodes.NOT_FOUND).send('User not found');
+        return res.status(StatusCodes.NOT_FOUND).send('User not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -117,13 +117,13 @@ export class UserController {
     try {
       const user = await userService.removeUser(id);
       if (user) {
-        res.status(StatusCodes.OK).send(user);
+        return res.status(StatusCodes.OK).send(user);
       } else {
-        res.status(StatusCodes.NOT_FOUND).send('User not found');
+        return res.status(StatusCodes.NOT_FOUND).send('User not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -131,13 +131,13 @@ export class UserController {
     const { authorization } = <refreshTokenDto>matchedData(req);
     try {
       const newTokens = await userService.refreshToken(authorization);
-      res.send(newTokens);
+      return res.send(newTokens);
     } catch (err: Error | unknown) {
       if (err instanceof Error) {
         if (err.message == 'Invalid token') {
-          res.status(StatusCodes.UNAUTHORIZED).send('Invalid token');
+          return res.status(StatusCodes.UNAUTHORIZED).send('Invalid token');
         } else if (err.message == '500') {
-          res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(StatusCodes.INTERNAL_SERVER_ERROR);
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(StatusCodes.INTERNAL_SERVER_ERROR);
         }
       }
     }
