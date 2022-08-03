@@ -1,5 +1,3 @@
-//Controller for user authentication
-
 import UserService from '../services/userService';
 import bcrypt from 'bcrypt';
 import Express from 'express';
@@ -25,10 +23,7 @@ interface MongoError {
   keyValue: unknown;
 }
 
-//UserController class for user related requests
 export class UserController {
-  //Register a new user with provided username and password
-  //password is hashed before storing in the database
   public async register(req: Express.Request, res: Express.Response) {
     const { username, password } = <registerDto>matchedData(req);
     if (password && username) {
@@ -48,7 +43,7 @@ export class UserController {
       return res.status(StatusCodes.BAD_REQUEST).send('Missing username or password');
     }
   }
-  //Authenticate a user with provided username and password
+
   public async login(
     req: Express.Request,
     res: Express.Response,
@@ -73,7 +68,6 @@ export class UserController {
     }
   }
 
-  //Provides logged in user data to the client
   public getProfile(req: Express.Request, res: Express.Response) {
     const { user } = <getProfileDto>matchedData(req);
     if (user) {
@@ -83,7 +77,6 @@ export class UserController {
     }
   }
 
-  //Provides a list of all users
   public async getAllUsers(req: Express.Request, res: Express.Response) {
     const { page, limit } = <getAllUsersDto>matchedData(req, { locations: ['query'] });
     try {
@@ -95,7 +88,6 @@ export class UserController {
     }
   }
 
-  //Provides data of a user with provided id
   public async getUser(req: Express.Request, res: Express.Response) {
     const { id } = <getUserDto>matchedData(req);
     try {
@@ -111,7 +103,6 @@ export class UserController {
     }
   }
 
-  //Deletes a user with provided id
   public async removeUser(req: Express.Request, res: Express.Response) {
     const { id } = <removeUserDto>matchedData(req);
     try {
