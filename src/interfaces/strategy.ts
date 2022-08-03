@@ -1,5 +1,5 @@
 export enum Strategy {
-  Login = 'login',
-  AccessToken = 'access-token',
-  RefreshToken = 'refresh-token',
+  Basic = 'login',
+  Bearer = 'access-token',
+  RefreshBearer = 'refresh-token',
 }

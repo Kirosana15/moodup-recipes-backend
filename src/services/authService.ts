@@ -5,9 +5,9 @@ import { bearerStrategy, refreshBearerStrategy } from '../strategies/bearer';
 
 export class AuthService {
   public initializePassportStrategies() {
-    passport.use(Strategy.Login, basicStrategy);
-    passport.use(Strategy.AccessToken, bearerStrategy);
-    passport.use(Strategy.RefreshToken, refreshBearerStrategy);
+    passport.use(Strategy.Basic, basicStrategy);
+    passport.use(Strategy.Bearer, bearerStrategy);
+    passport.use(Strategy.RefreshBearer, refreshBearerStrategy);
   }
 }
 

@@ -63,7 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post('/login', passport.authenticate(Strategy.Login, { session: false }), userController.login);
+router.post('/login', passport.authenticate(Strategy.Basic, { session: false }), userController.login);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ router.post('/login', passport.authenticate(Strategy.Login, { session: false }),
  */
 router.get(
   '/users',
-  passport.authenticate(Strategy.AccessToken, { session: false }),
+  passport.authenticate(Strategy.Bearer, { session: false }),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
   userController.getAllUsers,
@@ -123,7 +123,7 @@ router.get(
  */
 router.get(
   '/users/:id',
-  passport.authenticate(Strategy.AccessToken, { session: false }),
+  passport.authenticate(Strategy.Bearer, { session: false }),
   validate(validateGetUser),
   userController.getUser,
 );
@@ -150,13 +150,13 @@ router.get(
  */
 router.get(
   '/users/:id',
-  passport.authenticate(Strategy.AccessToken, { session: false }),
+  passport.authenticate(Strategy.Bearer, { session: false }),
   validate(validateGetUser),
   userController.getUser,
 );
 router.delete(
   '/users/:id',
-  passport.authenticate(Strategy.AccessToken, { session: false }),
+  passport.authenticate(Strategy.Bearer, { session: false }),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser,
@@ -179,7 +179,7 @@ router.delete(
  *         schema:
  *           $ref: '#/components/schemas/TokenData'
  */
-router.get('/profile', passport.authenticate(Strategy.AccessToken, { session: false }), userController.getProfile);
+router.get('/profile', passport.authenticate(Strategy.Bearer, { session: false }), userController.getProfile);
 
 /**
  * @swagger
@@ -200,7 +200,7 @@ router.get('/profile', passport.authenticate(Strategy.AccessToken, { session: fa
  */
 router.post(
   '/refresh-token',
-  passport.authenticate(Strategy.RefreshToken, { session: false }),
+  passport.authenticate(Strategy.RefreshBearer, { session: false }),
   userController.refreshToken,
 );
 
