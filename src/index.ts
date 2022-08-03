@@ -7,7 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import m2s from 'mongoose-to-swagger';
 import { User } from './models/userModel';
 import { Recipe } from './models/recipeModel';
-import { initializePassportStrategies } from './services/authService';
+import { authService } from './services/authService';
 
 import mongoose from 'mongoose';
 import userRouter from './routes/userRouter';
@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.static('public'));
 
-initializePassportStrategies();
+authService.initializePassportStrategies();
 
 //database connection
 try {

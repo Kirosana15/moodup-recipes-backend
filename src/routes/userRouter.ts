@@ -11,6 +11,7 @@ import {
   validateRemoveUser,
 } from '../validators/userValidators';
 import passport from 'passport';
+import { Strategy } from '../interfaces/strategy';
 
 const router = express.Router();
 const userController = new UserController();
@@ -62,11 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post(
-  '/login',
-  passport.authenticate('login', { session: false }),
-  userController.login
-);
+router.post('/login', passport.authenticate(Strategy.Login, { session: false }), userController.login);
 
 /**
  * @swagger
@@ -96,10 +93,10 @@ router.post(
  */
 router.get(
   '/users',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   authController.authorizeAdmin,
   validate(validateGetAllUsers),
-  userController.getAllUsers
+  userController.getAllUsers,
 );
 
 /**
@@ -126,9 +123,9 @@ router.get(
  */
 router.get(
   '/users/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateGetUser),
-  userController.getUser
+  userController.getUser,
 );
 /**
  * @swagger
@@ -153,16 +150,16 @@ router.get(
  */
 router.get(
   '/users/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateGetUser),
-  userController.getUser
+  userController.getUser,
 );
 router.delete(
   '/users/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   authController.authorizeAdmin,
   validate(validateRemoveUser),
-  userController.removeUser
+  userController.removeUser,
 );
 
 /**
@@ -182,11 +179,7 @@ router.delete(
  *         schema:
  *           $ref: '#/components/schemas/TokenData'
  */
-router.get(
-  '/profile',
-  passport.authenticate('access-token', { session: false }),
-  userController.getProfile
-);
+router.get('/profile', passport.authenticate(Strategy.AccessToken, { session: false }), userController.getProfile);
 
 /**
  * @swagger
@@ -207,8 +200,8 @@ router.get(
  */
 router.post(
   '/refresh-token',
-  passport.authenticate('refresh-token', { session: false }),
-  userController.refreshToken
+  passport.authenticate(Strategy.RefreshToken, { session: false }),
+  userController.refreshToken,
 );
 
 export default router;

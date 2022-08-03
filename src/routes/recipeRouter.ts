@@ -13,8 +13,8 @@ import {
   validateRemoveRecipe,
   validateSearchRecipes,
 } from '../validators/recipeValidators';
-
 import passport from 'passport';
+import { Strategy } from '../interfaces/strategy';
 
 const router = express.Router();
 
@@ -49,9 +49,9 @@ const authController = new AuthController();
  */
 router.get(
   '/recipes',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateGetRecipes),
-  recipeController.getRecipesByOwner
+  recipeController.getRecipesByOwner,
 );
 
 /**
@@ -81,9 +81,9 @@ router.get(
  */
 router.post(
   '/recipes',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateCreateRecipe),
-  recipeController.createRecipe
+  recipeController.createRecipe,
 );
 
 /**
@@ -114,10 +114,10 @@ router.post(
  */
 router.get(
   '/recipes/all',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   authController.authorizeAdmin,
   validate(validateGetAllRecipes),
-  recipeController.getAllRecipes
+  recipeController.getAllRecipes,
 );
 
 /**
@@ -144,9 +144,9 @@ router.get(
  */
 router.get(
   '/recipes/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateGetRecipe),
-  recipeController.getRecipe
+  recipeController.getRecipe,
 );
 
 /**
@@ -176,9 +176,9 @@ router.get(
  */
 router.put(
   '/recipes/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateUpdateRecipe),
-  recipeController.updateRecipe
+  recipeController.updateRecipe,
 );
 
 /**
@@ -205,9 +205,9 @@ router.put(
  */
 router.delete(
   '/recipes/:id',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateRemoveRecipe),
-  recipeController.removeRecipe
+  recipeController.removeRecipe,
 );
 
 /**
@@ -234,9 +234,9 @@ router.delete(
  */
 router.get(
   '/recipes/search/:query',
-  passport.authenticate('access-token', { session: false }),
+  passport.authenticate(Strategy.AccessToken, { session: false }),
   validate(validateSearchRecipes),
-  recipeController.searchRecipes
+  recipeController.searchRecipes,
 );
 
 export default router;
