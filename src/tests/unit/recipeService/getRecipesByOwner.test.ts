@@ -1,7 +1,6 @@
 import { mockId, saveRecipes } from '../../mocks/mockRecipe';
 import RecipeService from '../../../services/recipeService';
 import { setupTests } from '../../setupTests';
-import { Recipe } from '../../../interfaces/recipe';
 
 const recipeService = new RecipeService();
 
@@ -11,10 +10,8 @@ setupTests('getRecipesByOwner', () => {
       const savedRecipes = await saveRecipes(3, mockId);
       const recipes = await recipeService.getRecipesByOwner(mockId);
       expect(recipes).toHaveLength(3);
-      recipes.forEach((recipe) => {
-        expect(savedRecipes).toEqual(
-          expect.arrayContaining([expect.objectContaining({ id: recipe.id })])
-        );
+      recipes.forEach(recipe => {
+        expect(savedRecipes).toEqual(expect.arrayContaining([expect.objectContaining({ id: recipe.id })]));
       });
     });
 
@@ -36,11 +33,7 @@ setupTests('getRecipesByOwner', () => {
     test('results sorted by descending creation time', async () => {
       await saveRecipes(5, mockId);
       const recipes = await recipeService.getRecipesByOwner(mockId);
-      expect(recipes).toStrictEqual(
-        [...recipes].sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-        )
-      );
+      expect(recipes).toStrictEqual([...recipes].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
     });
 
     test('only recipes owned by user', async () => {

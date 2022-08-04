@@ -44,7 +44,7 @@ class UserService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  public async generateToken(user: UserObject): Promise<{ accessToken: string; refreshToken: string }> {
+  public async generateTokens(user: UserObject): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
       {
         id: user.id,
@@ -73,7 +73,7 @@ class UserService {
       if (!user || token !== user.refreshToken) {
         throw new Error('Invalid token');
       }
-      return this.generateToken(user);
+      return this.generateTokens(user);
     } catch (err) {
       console.log(err);
       throw new Error('500');

@@ -1,9 +1,7 @@
 import { mockId, mockToken, saveUser } from '../../mocks/mockUser';
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('updateRefreshToken', () => {
   test('returns the user with an old token', async () => {

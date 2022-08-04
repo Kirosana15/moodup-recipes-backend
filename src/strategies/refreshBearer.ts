@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IUser } from '../interfaces/user';
+import { UserObject } from '../interfaces/user';
 import { userService } from '../services/userService';
 
 const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
@@ -9,7 +9,7 @@ export const refreshBearerLogic = async (token: string, done: (error: any, user?
   try {
     const decoded = <JwtPayload>jwt.verify(token, TOKEN_KEY);
     try {
-      const user = <IUser>await userService.getUserById(decoded.id);
+      const user = <UserObject>await userService.getUserById(decoded.id);
       if (!user || token !== user.refreshToken) {
         throw new Error('Invalid token');
       }

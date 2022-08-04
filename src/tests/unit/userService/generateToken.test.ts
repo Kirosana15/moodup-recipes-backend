@@ -1,32 +1,31 @@
 import 'dotenv/config';
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { saveUser } from '../../mocks/mockUser';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { MATCH_JWT } from '../../constants';
 import { setupTests } from '../../setupTests';
 
-const userService = new UserService();
 const secret = process.env.TOKEN_KEY || 'secret';
 
-setupTests('generateToken', () => {
+setupTests('generateTokens', () => {
   test('returns new set of tokens for a user', async () => {
     const user = await saveUser();
-    const { accessToken, refreshToken } = await userService.generateToken(user);
+    const { accessToken, refreshToken } = await userService.generateTokens(user);
     expect(accessToken).toMatch(MATCH_JWT);
     expect(refreshToken).toMatch(MATCH_JWT);
   });
 
   test('saves a refresh token to a user', async () => {
     const user = await saveUser();
-    const { refreshToken } = await userService.generateToken(user);
+    const { refreshToken } = await userService.generateTokens(user);
     const returnedUser = await User.findById(user.id);
     expect(returnedUser?.refreshToken).toEqual(refreshToken);
   });
 
   test('user data is saved in a access token', async () => {
     const user = await saveUser();
-    const { accessToken } = await userService.generateToken(user);
+    const { accessToken } = await userService.generateTokens(user);
     const userData = <JwtPayload>jwt.verify(accessToken, secret);
     expect(userData.id).toBe(user.id);
     expect(userData.username).toBe(user.username);
@@ -35,7 +34,7 @@ setupTests('generateToken', () => {
 
   test('token have expiration and issued dates', async () => {
     const user = await saveUser();
-    const { accessToken, refreshToken } = await userService.generateToken(user);
+    const { accessToken, refreshToken } = await userService.generateTokens(user);
     const accessData = <JwtPayload>jwt.verify(accessToken, secret);
     const refreshData = <JwtPayload>jwt.verify(refreshToken, secret);
     expect(typeof accessData.iat).toBe('number');

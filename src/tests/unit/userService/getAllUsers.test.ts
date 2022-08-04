@@ -1,8 +1,6 @@
 import { saveUsers } from '../../mocks/mockUser';
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('getAllUsers', () => {
   test('returns existing users', async () => {
@@ -32,7 +30,7 @@ setupTests('getAllUsers', () => {
     expect(users).toStrictEqual(
       [...users].sort((a, b) => {
         return b.createdAt.getTime() - a.createdAt.getTime();
-      })
+      }),
     );
   });
 });

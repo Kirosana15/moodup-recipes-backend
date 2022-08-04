@@ -7,6 +7,7 @@ import { matchedData } from 'express-validator';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import { GetAllUsersDto, GetUserDto, RegisterDto, RemoveUserDto } from '../interfaces/dto/userDtos';
 import { AuthenticatedBasicRequest } from '../interfaces/requests';
+import { UserObject } from '../interfaces/user';
 
 interface MongoError {
   index: string;
@@ -103,7 +104,7 @@ export class UserController {
   }
 
   public async refreshToken(req: Express.Request, res: Express.Response) {
-    const user = req.user;
+    const user = <UserObject>req.user;
     try {
       const newTokens = await userService.generateTokens(user);
       res.send(newTokens);

@@ -11,7 +11,7 @@ import {
   RemoveRecipeDto,
   SearchRecipesDto,
 } from '../interfaces/dto/recipeDtos';
-import { IUser } from '../interfaces/user';
+import { UserObject } from '../interfaces/user';
 
 const recipeService = new RecipeService();
 
@@ -46,7 +46,7 @@ export class RecipeController {
   // Returns a list of all recipes for logged in user
   public async getRecipesByOwner(req: Express.Request, res: Express.Response) {
     const { page, limit } = <GetRecipesByOwnerDto>matchedData(req);
-    const user = <IUser>req.user;
+    const user = <UserObject>req.user;
     if (!user) {
       res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
     }
@@ -61,7 +61,7 @@ export class RecipeController {
   // Creates a new recipe
   public async createRecipe(req: Express.Request, res: Express.Response) {
     const { title, imageUrl, body } = <CreateRecipeDto>matchedData(req);
-    const user = <IUser>req.user;
+    const user = <UserObject>req.user;
     try {
       const recipe = await recipeService.createRecipe(user.id, title, imageUrl, body);
       res.status(201).send(recipe);
@@ -73,7 +73,7 @@ export class RecipeController {
   // Updates body of a recipe with provided id if the user is the owner or an admin
   public async updateRecipe(req: Express.Request, res: Express.Response) {
     const { id, title, imageUrl, body } = <UpdateRecipeDto>matchedData(req);
-    const user = <IUser>req.user;
+    const user = <UserObject>req.user;
     try {
       const recipe = await recipeService.updateRecipe(id, title, imageUrl, body);
       if (recipe) {
@@ -94,7 +94,7 @@ export class RecipeController {
   // Deletes a recipe with provided id if the user is the owner or an admin
   public async removeRecipe(req: Express.Request, res: Express.Response) {
     const { id } = <RemoveRecipeDto>matchedData(req);
-    const user = <IUser>req.user;
+    const user = <UserObject>req.user;
     try {
       const recipe = await recipeService.getRecipe(id);
       if (recipe) {

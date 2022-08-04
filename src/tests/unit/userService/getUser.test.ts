@@ -1,9 +1,7 @@
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('getUser', () => {
   test('fetch a User in a database', async () => {

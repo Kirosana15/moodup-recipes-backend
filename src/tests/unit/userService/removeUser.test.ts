@@ -1,9 +1,7 @@
 import { mockId, saveUser, saveUsers } from '../../mocks/mockUser';
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('removeUser', () => {
   test('returns removed user', async () => {

@@ -1,11 +1,7 @@
 import { User } from '../../../models/userModel';
-import UserService from '../../../services/userService';
-
+import { userService } from '../../../services/userService';
 import { mockUsername, mockPassword } from '../../mocks/mockUser';
-
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('createUser', () => {
   test('save new User in a database', async () => {
@@ -19,9 +15,7 @@ setupTests('createUser', () => {
   describe('error thrown when', () => {
     test('username already exists', async () => {
       await userService.createUser(mockUsername, mockPassword);
-      await expect(
-        userService.createUser(mockUsername, mockPassword)
-      ).rejects.toThrow();
+      await expect(userService.createUser(mockUsername, mockPassword)).rejects.toThrow();
     });
 
     test('no username provided', async () => {

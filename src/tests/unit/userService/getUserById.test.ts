@@ -1,9 +1,7 @@
 import { mockId, mockPassword, mockUsername } from '../../mocks/mockUser';
-import UserService from '../../../services/userService';
+import { userService } from '../../../services/userService';
 import { User } from '../../../models/userModel';
 import { setupTests } from '../../setupTests';
-
-const userService = new UserService();
 
 setupTests('getUserById', () => {
   test("doesn't return user when id doesn't exist", async () => {
