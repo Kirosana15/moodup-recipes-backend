@@ -5,20 +5,16 @@ import { mockPassword, mockUsername } from '../mockObjects/mockUser';
 import { setupTests } from '../setupTests';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import bcrypt from 'bcrypt';
-import UserService from '../../services/userService';
+import { userService } from '../../services/userService';
 
 setupTests('register-e2e', () => {
   describe('POST /register should respond', () => {
-    const createUserSpy = jest
-      .spyOn(UserService.prototype, 'createUser')
-      .mockImplementation((): any => {
-        return Promise.resolve({ username: mockUsername, password: 'hash' });
-      });
+    const createUserSpy = jest.spyOn(userService, 'createUser').mockImplementation((): any => {
+      return Promise.resolve({ username: mockUsername, password: 'hash' });
+    });
 
     test('with created user with hashed password', async () => {
-      const res = await request(app)
-        .post('/register')
-        .send({ username: mockUsername, password: mockPassword });
+      const res = await request(app).post('/register').send({ username: mockUsername, password: mockPassword });
 
       expect(res.statusCode).toBe(StatusCodes.CREATED);
       expect(bcrypt.hash).toBeCalledTimes(1);
@@ -28,9 +24,7 @@ setupTests('register-e2e', () => {
     });
 
     test('with 400 when username is not provided', async () => {
-      const res = await request(app)
-        .post('/register')
-        .send({ password: mockPassword });
+      const res = await request(app).post('/register').send({ password: mockPassword });
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
       expect(bcrypt.hash).toBeCalledTimes(0);
@@ -38,9 +32,7 @@ setupTests('register-e2e', () => {
     });
 
     test('with 400 when password is not provided', async () => {
-      const res = await request(app)
-        .post('/register')
-        .send({ username: mockUsername });
+      const res = await request(app).post('/register').send({ username: mockUsername });
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
       expect(bcrypt.hash).toBeCalledTimes(0);
@@ -51,9 +43,7 @@ setupTests('register-e2e', () => {
       createUserSpy.mockImplementationOnce(() => {
         return Promise.reject({ code: 11000 });
       });
-      const res = await request(app)
-        .post('/register')
-        .send({ username: mockUsername, password: mockPassword });
+      const res = await request(app).post('/register').send({ username: mockUsername, password: mockPassword });
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
       expect(createUserSpy).toBeCalledTimes(1);
@@ -64,9 +54,7 @@ setupTests('register-e2e', () => {
       createUserSpy.mockImplementation(() => {
         throw { code: 1 };
       });
-      const errRes = await request(app)
-        .post('/register')
-        .send({ username: mockUsername, password: mockPassword });
+      const errRes = await request(app).post('/register').send({ username: mockUsername, password: mockPassword });
 
       expect(errRes.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(errRes.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
@@ -74,17 +62,13 @@ setupTests('register-e2e', () => {
     });
 
     test(`with ${StatusCodes.BAD_REQUEST} when username validation fails`, async () => {
-      const res = await request(app)
-        .post('/register')
-        .send({ username: 'Mo', password: mockPassword });
+      const res = await request(app).post('/register').send({ username: 'Mo', password: mockPassword });
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
 
     test(`with ${StatusCodes.BAD_REQUEST} when password validation fails`, async () => {
-      const res = await request(app)
-        .post('/register')
-        .send({ username: mockUsername, password: 'pass' });
+      const res = await request(app).post('/register').send({ username: mockUsername, password: 'pass' });
 
       expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
