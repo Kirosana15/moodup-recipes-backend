@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { UserController } from '../controllers/userController';
-import AuthController from '../controllers/authController';
+import authController from '../controllers/authController';
 import { validate } from '../validators/validators';
 import {
   validateRegister,
@@ -15,7 +15,6 @@ import { authService } from '../services/authService';
 
 const router = express.Router();
 const userController = new UserController();
-const authController = new AuthController();
 
 /**
  * @swagger
