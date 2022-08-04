@@ -8,7 +8,7 @@ export const connectToDb = async (dbName: string) => {
       autoCreate: true,
     });
   } catch (error) {
-    console.log(CONN_ERR);
+    throw new Error(CONN_ERR);
   }
 };
 
