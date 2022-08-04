@@ -41,6 +41,7 @@ export const setupTests = (testName: string, runTests: () => void) => {
     });
     afterEach(async () => {
       await clearAllCollections();
+      jest.clearAllMocks();
     });
     afterAll(async () => {
       await closeConnection();
