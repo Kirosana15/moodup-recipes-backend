@@ -9,7 +9,7 @@ class AuthController {
     if (req.user?.isAdmin) {
       next();
     } else {
-      res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
+      return res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
     }
   }
 }
