@@ -64,8 +64,10 @@ export class UserController {
 
   public async getAllUsers(req: Express.Request, res: Express.Response) {
     const { page, limit } = <GetAllUsersDto>matchedData(req, { locations: ['query'] });
+    console.log('here');
     try {
       const users = await userService.getAllUsers(page, limit);
+      console.log(users);
       return res.send(users);
     } catch (err) {
       console.log(err);
