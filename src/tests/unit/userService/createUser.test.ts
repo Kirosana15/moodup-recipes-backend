@@ -1,4 +1,3 @@
-import { IUser } from '../../../interfaces/user';
 import { User } from '../../../models/userModel';
 import UserService from '../../../services/userService';
 
@@ -11,10 +10,10 @@ const userService = new UserService();
 setupTests('createUser', () => {
   test('save new User in a database', async () => {
     await userService.createUser(mockUsername, mockPassword);
-    const user = <IUser>await User.findOne({ mockUsername });
+    const user = await User.findOne({ mockUsername });
     expect(user).toBeDefined();
-    expect(user.username).toBe(mockUsername);
-    expect(user.password).toBe(mockPassword);
+    expect(user?.username).toBe(mockUsername);
+    expect(user?.password).toBe(mockPassword);
   });
 
   describe('error thrown when', () => {

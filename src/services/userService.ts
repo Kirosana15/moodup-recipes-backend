@@ -2,8 +2,8 @@
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel';
-import jwt, { Secret } from 'jsonwebtoken';
-import { IUser } from '../interfaces/user';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import { UserObject } from '../interfaces/user';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -32,7 +32,7 @@ class UserService {
     return User.findByIdAndRemove(id).exec();
   }
 
-  public getAllUsers(page = 1, limit = 10) {
+  public getAllUsers(page = 1, limit = 10): Promise<UserObject[]> {
     return User.find({}, '_id username isAdmin createdAt')
       .skip((page - 1) * limit)
       .limit(limit)
@@ -44,7 +44,7 @@ class UserService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  public async generateTokens(user: IUser): Promise<{ accessToken: string; refreshToken: string }> {
+  public async generateToken(user: UserObject): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
       {
         id: user.id,
@@ -60,6 +60,20 @@ class UserService {
     try {
       await this.updateRefreshToken(user.id, refreshToken);
       return { accessToken, refreshToken };
+    } catch (err) {
+      console.log(err);
+      throw new Error('500');
+    }
+  }
+
+  public async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string }> {
+    const decoded = <JwtPayload>jwt.verify(token, this.TOKEN_KEY);
+    try {
+      const user = await this.getUserById(decoded.id);
+      if (!user || token !== user.refreshToken) {
+        throw new Error('Invalid token');
+      }
+      return this.generateToken(user);
     } catch (err) {
       console.log(err);
       throw new Error('500');

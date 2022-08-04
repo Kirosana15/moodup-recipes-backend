@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { RecipePayload, IRecipe } from '../../interfaces/recipe';
+import { RecipePayload, Recipe as RecipeType } from '../../interfaces/recipe';
 import { Recipe } from '../../models/recipeModel';
 
 export const mockId = faker.database.mongodbObjectId();
@@ -27,13 +27,13 @@ export const generateRecipes = (
   });
 };
 
-export const saveRecipe = async (ownerId?: string): Promise<IRecipe> => {
-  return <IRecipe>await new Recipe(generateRecipe(ownerId)).save();
+export const saveRecipe = async (ownerId?: string): Promise<RecipeType> => {
+  return <RecipeType>await new Recipe(generateRecipe(ownerId)).save();
 };
 
 export const saveRecipes = async (
   n: number,
   ownerId?: string
-): Promise<IRecipe[]> => {
-  return <IRecipe[]>await Recipe.insertMany(generateRecipes(n, ownerId));
+): Promise<RecipeType[]> => {
+  return <RecipeType[]>await Recipe.insertMany(generateRecipes(n, ownerId));
 };

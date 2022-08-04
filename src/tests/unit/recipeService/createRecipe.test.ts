@@ -1,4 +1,3 @@
-import { IRecipe } from '../../../interfaces/recipe';
 import { Recipe } from '../../../models/recipeModel';
 import RecipeService from '../../../services/recipeService';
 
@@ -16,12 +15,12 @@ setupTests('createRecipe', () => {
       mockImage,
       mockBody
     );
-    const recipe = <IRecipe>await Recipe.findById(newRecipe.id);
+    const recipe = await Recipe.findById(newRecipe.id);
     expect(recipe).toBeDefined();
-    expect(recipe.title).toBe(mockTitle);
-    expect(recipe.body).toBe(mockBody);
-    expect(recipe.ownerId).toBe(mockId);
-    expect(recipe.imageUrl).toBe(mockImage);
+    expect(recipe?.title).toBe(mockTitle);
+    expect(recipe?.body).toBe(mockBody);
+    expect(recipe?.ownerId).toBe(mockId);
+    expect(recipe?.imageUrl).toBe(mockImage);
   });
 
   describe('should throw when', () => {

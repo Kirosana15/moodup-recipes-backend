@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-export interface IUser {
+export interface UserObject {
   id: string;
   username: string;
   password: string;
@@ -10,7 +9,7 @@ export interface IUser {
 
 declare global {
   namespace Express {
-    interface User extends IUser {
+    interface User extends UserObject {
       id: string;
       username: string;
       password: string;
@@ -20,4 +19,4 @@ declare global {
     }
   }
 }
-export type UserPayload = Omit<IUser, 'id'>;
+export type UserPayload = Omit<UserObject, 'id'>;

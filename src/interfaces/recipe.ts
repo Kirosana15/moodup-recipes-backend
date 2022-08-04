@@ -1,4 +1,4 @@
-export interface IRecipe {
+export interface Recipe {
   _id: string;
   ownerId: string;
   title: string;
@@ -7,4 +7,4 @@ export interface IRecipe {
   createdAt: Date;
 }
 
-export type RecipePayload = Omit<IRecipe, '_id'>;
+export type RecipePayload = Omit<Recipe, '_id'>;

@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import UserService from '../../../services/userService';
 import { User } from '../../../models/userModel';
-import { IUser } from '../../../interfaces/user';
 import { saveUser } from '../../mocks/mockUser';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { MATCH_JWT } from '../../constants';
@@ -15,14 +14,14 @@ setupTests('generateToken', () => {
     const user = await saveUser();
     const { accessToken, refreshToken } = await userService.generateToken(user);
     expect(accessToken).toMatch(MATCH_JWT);
-    expect(refreshToken).toMatch(MATCH_JWT); //matches a JWT token
+    expect(refreshToken).toMatch(MATCH_JWT);
   });
 
   test('saves a refresh token to a user', async () => {
-    let user = await saveUser();
+    const user = await saveUser();
     const { refreshToken } = await userService.generateToken(user);
-    user = <IUser>await User.findById(user.id);
-    expect(user.refreshToken).toEqual(refreshToken);
+    const returnedUser = await User.findById(user.id);
+    expect(returnedUser?.refreshToken).toEqual(refreshToken);
   });
 
   test('user data is saved in a access token', async () => {
