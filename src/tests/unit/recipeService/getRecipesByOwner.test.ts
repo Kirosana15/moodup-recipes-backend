@@ -1,15 +1,21 @@
 import { mockId, saveRecipes } from '../../mocks/mockRecipe';
 import RecipeService from '../../../services/recipeService';
 import { setupTests } from '../../setupTests';
+import { Recipe } from '../../../interfaces/recipe';
 
 const recipeService = new RecipeService();
 
 setupTests('getRecipesByOwner', () => {
   describe('should return', () => {
     test('existing recipes', async () => {
-      await saveRecipes(3, mockId);
+      const savedRecipes = await saveRecipes(3, mockId);
       const recipes = await recipeService.getRecipesByOwner(mockId);
       expect(recipes).toHaveLength(3);
+      recipes.forEach((recipe) => {
+        expect(savedRecipes).toEqual(
+          expect.arrayContaining([expect.objectContaining({ id: recipe.id })])
+        );
+      });
     });
 
     test('empty array if no recipes present', async () => {
