@@ -5,7 +5,6 @@ import { User } from '../../models/userModel';
 export const mockUsername = faker.name.firstName();
 export const mockPassword = faker.internet.password();
 export const mockId = faker.database.mongodbObjectId();
-export const mockToken = faker.datatype.string(30);
 
 export const generateUser = (): UserPayload => {
   return {
