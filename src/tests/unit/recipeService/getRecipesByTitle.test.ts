@@ -19,11 +19,11 @@ setupTests('getRecipesByTitle', () => {
       imageUrl: mockImage,
       body: mockBody,
     }).save();
-    const recipes = await recipeService.getRecipesByTitle(mockTitle);
-    expect(recipes[0]).toBeDefined();
-    expect(recipes[0].title).toBe(mockTitle);
-    expect(recipes[0].imageUrl).toBe(mockImage);
-    expect(recipes[0].body).toBe(mockBody);
+    const [recipe] = await recipeService.getRecipesByTitle(mockTitle);
+    expect(recipe).toBeDefined();
+    expect(recipe.title).toBe(mockTitle);
+    expect(recipe.imageUrl).toBe(mockImage);
+    expect(recipe.body).toBe(mockBody);
   });
 
   test('should find recipes with titles containing a query', async () => {

@@ -23,8 +23,8 @@ setupTests('getAllRecipes', () => {
       expect(recipes).toHaveLength(10);
       recipes = await recipeService.getAllRecipes(undefined, 20);
       expect(recipes).toHaveLength(20);
-      const pagedRecipes = await recipeService.getAllRecipes(2, 5);
-      expect(pagedRecipes[0]).toEqual(recipes[5]);
+      const [firstRecipe] = await recipeService.getAllRecipes(2, 5);
+      expect(firstRecipe).toEqual(recipes[5]);
     });
 
     test('results sorted by descending creation time', async () => {
