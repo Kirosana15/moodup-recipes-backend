@@ -30,8 +30,10 @@ setupTests('getRecipesByOwner', () => {
     test('results sorted by descending creation time', async () => {
       await saveRecipes(5, mockId);
       const recipes = await recipeService.getRecipesByOwner(mockId);
-      expect(recipes[0].createdAt.getTime()).toBeGreaterThan(
-        recipes[1].createdAt.getTime()
+      expect(recipes).toStrictEqual(
+        [...recipes].sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        )
       );
     });
 

@@ -29,8 +29,10 @@ setupTests('getAllUsers', () => {
   test('results are sorted by descending creation time', async () => {
     await saveUsers(5);
     const users = await userService.getAllUsers();
-    expect(users[0].createdAt.getTime()).toBeGreaterThan(
-      users[1].createdAt.getTime()
+    expect(users).toStrictEqual(
+      [...users].sort((a, b) => {
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      })
     );
   });
 });

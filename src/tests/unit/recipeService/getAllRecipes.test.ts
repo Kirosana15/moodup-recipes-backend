@@ -30,8 +30,10 @@ setupTests('getAllRecipes', () => {
     test('results sorted by descending creation time', async () => {
       await saveRecipes(5);
       const recipes = await recipeService.getAllRecipes();
-      expect(recipes[0].createdAt.getTime()).toBeGreaterThan(
-        recipes[1].createdAt.getTime()
+      expect(recipes).toStrictEqual(
+        [...recipes].sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        )
       );
     });
   });
