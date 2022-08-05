@@ -1,87 +1,59 @@
 import request from 'supertest';
 import app from '../../app';
-import { generateUser, mockPassword, mockUsername } from '../mockObjects/mockUser';
-import { mockInvalidToken } from '../mockObjects/mockToken';
+import { mockPassword, mockUsername, mockBasicAuthString } from '../mockObjects/mockUser';
 import { setupTests } from '../setupTests';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { userService } from '../../services/userService';
+import { mockComparePassword, mockGenerateTokens, mockGetUser } from '../mockObjects/mockUserService';
 
 setupTests('login-e2e', () => {
+  const generateTokensSpy = jest.spyOn(userService, 'generateTokens').mockImplementation(mockGenerateTokens);
+  const getUsersSpy = jest.spyOn(userService, 'getUser').mockImplementation(mockGetUser);
+  const comparePasswordSpy = jest.spyOn(userService, 'comparePassword').mockImplementation(mockComparePassword);
   describe('POST /login responds', () => {
-    const getUserSpy = jest.spyOn(userService, 'getUser').mockImplementation((): any => {
-      return generateUser();
-    });
-    const comparePasswordSpy = jest
-      .spyOn(userService, 'comparePassword')
-      .mockImplementation(() => Promise.resolve(true));
-    const generateTokenSpy = jest.spyOn(userService, 'generateTokens').mockImplementation(() => {
-      return Promise.resolve({
-        accessToken: mockInvalidToken,
-        refreshToken: mockInvalidToken,
-      });
-    });
-
     test('with set of tokens for a logged in user', async () => {
-      const res = await request(app).post('/login').send({ username: mockUsername, password: mockPassword });
+      const res = await request(app)
+        .post('/login')
+        .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(getUserSpy).toBeCalledTimes(1);
-      expect(comparePasswordSpy).toBeCalledTimes(1);
-      expect(generateTokenSpy).toBeCalledTimes(1);
-      expect(res.body.accessToken).toBe(mockInvalidToken);
-      expect(res.body.refreshToken).toBe(mockInvalidToken);
+      expect(res.body.accessToken).toBeDefined();
+      expect(res.body.refreshToken).toBeDefined();
     });
 
-    test(`with ${StatusCodes.BAD_REQUEST} when username is not provided`, async () => {
-      const res = await request(app).post('/login').send({ password: mockPassword });
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
-      expect(generateTokenSpy).not.toBeCalled();
-      expect(getUserSpy).not.toBeCalled();
-      expect(comparePasswordSpy).not.toBeCalled();
-      expect(res.body.errors).toBeDefined();
+    test(`with ${StatusCodes.UNAUTHORIZED} when username is not provided`, async () => {
+      const res = await request(app).post('/login').set('Authorization', mockBasicAuthString('', mockPassword));
+      expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
     });
 
-    test(`with ${StatusCodes.BAD_REQUEST} when password is not provided`, async () => {
-      const res = await request(app).post('/login').send({ username: mockUsername });
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
-      expect(generateTokenSpy).not.toBeCalled();
-      expect(getUserSpy).not.toBeCalled();
-      expect(comparePasswordSpy).not.toBeCalled();
-      expect(res.body.errors).toBeDefined();
+    test(`with ${StatusCodes.UNAUTHORIZED} when password is not provided`, async () => {
+      const res = await request(app).post('/login').set('Authorization', mockBasicAuthString(mockUsername, ''));
+      expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
     });
-
     test(`with ${StatusCodes.UNAUTHORIZED} and error message "Invalid credentials" when wrong credentials are entered`, async () => {
-      getUserSpy.mockImplementationOnce(() => Promise.resolve(null));
-      const resNoUser = await request(app).post('/login').send({ username: mockUsername, password: mockPassword });
-
-      comparePasswordSpy.mockImplementationOnce(() => Promise.resolve(false));
-      const resBadPassword = await request(app).post('/login').send({ username: mockUsername, password: mockPassword });
+      getUsersSpy.mockResolvedValueOnce(null);
+      const resNoUser = await request(app)
+        .post('/login')
+        .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
+      comparePasswordSpy.mockResolvedValueOnce(false);
+      const resBadPassword = await request(app)
+        .post('/login')
+        .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
 
       expect(resNoUser.statusCode).toBe(StatusCodes.UNAUTHORIZED);
       expect(resBadPassword.statusCode).toBe(StatusCodes.UNAUTHORIZED);
-      expect(generateTokenSpy).not.toBeCalled();
-      expect(getUserSpy).toBeCalledTimes(2);
-      expect(comparePasswordSpy).toBeCalledTimes(1);
       expect(resNoUser.text).toEqual(resBadPassword.text);
-      expect(resNoUser.text).toEqual('Invalid credentials');
+      expect(resNoUser.text).toEqual(ReasonPhrases.UNAUTHORIZED);
     });
 
     test(`with ${StatusCodes.INTERNAL_SERVER_ERROR} when userService throws an error`, async () => {
-      getUserSpy.mockImplementation(() => {
-        return Promise.reject('error');
+      generateTokensSpy.mockImplementationOnce(() => {
+        throw new Error('test');
       });
-      const res = await request(app).post('/login').send({ username: mockUsername, password: mockPassword });
+      const res = await request(app)
+        .post('/login')
+        .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
-    });
-
-    test(`with ${StatusCodes.BAD_REQUEST} when username validation fails`, async () => {
-      const res = await request(app).post('/login').send({ username: 'Mo', password: mockPassword });
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
-    });
-
-    test(`with ${StatusCodes.BAD_REQUEST} when password validation fails`, async () => {
-      const res = await request(app).post('/login').send({ username: mockUsername, password: 'pass' });
-      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
   });
 });
