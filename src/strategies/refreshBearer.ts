@@ -8,9 +8,10 @@ const TOKEN_KEY = process.env.TOKEN_KEY || 'secret';
 
 export const refreshBearerLogic = async (token: string, done: (error: any, user?: any) => void) => {
   try {
-    const decoded = <JwtPayload>jwt.verify(token, TOKEN_KEY);
+    const { id } = <JwtPayload>jwt.verify(token, TOKEN_KEY);
     try {
-      const { refreshToken, ...user } = <User>await userService.getUserById(decoded.id, Select.token);
+      const userFromDb = await userService.getUserById(id, Select.token);
+      const { refreshToken, ...user } = <User>userFromDb?.toObject();
       if (!user || token !== refreshToken) {
         throw new Error('Invalid token');
       }

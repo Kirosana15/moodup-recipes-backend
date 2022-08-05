@@ -104,7 +104,6 @@ export class UserController {
 
   public async refreshToken(req: Express.Request, res: Express.Response) {
     const user = <User>req.user;
-    console.log(user);
     try {
       const newTokens = await userService.generateTokens(user);
       res.send(newTokens);
