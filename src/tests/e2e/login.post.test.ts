@@ -2,12 +2,12 @@ import 'dotenv/config';
 import request from 'supertest';
 import app from '../../app';
 import { mockPassword, mockUsername, mockBasicAuthString } from '../mockObjects/mockUser';
-import { setupTests } from '../setupTests';
+import { setupE2E } from '../setupTests';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { userService } from '../../services/userService';
 import { mockComparePassword, mockGenerateTokens, mockGetUser } from '../mockObjects/mockUserService';
 
-setupTests('login-e2e', () => {
+setupE2E('login-e2e', () => {
   const generateTokensSpy = jest.spyOn(userService, 'generateTokens').mockImplementation(mockGenerateTokens);
   const getUsersSpy = jest.spyOn(userService, 'getUser').mockImplementation(mockGetUser);
   const comparePasswordSpy = jest.spyOn(userService, 'comparePassword').mockImplementation(mockComparePassword);
