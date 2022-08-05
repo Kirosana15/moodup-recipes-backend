@@ -142,11 +142,9 @@ router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(val
  *         schema:
  *           $ref: '#/components/schemas/User'
  */
-router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 router.delete(
   '/users/:id',
   authService.authenticate(Strategy.Bearer),
-  authController.authorizeAdmin,
   validate(validateRemoveUser),
   userController.removeUser,
 );
