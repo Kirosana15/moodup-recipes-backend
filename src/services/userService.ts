@@ -3,7 +3,7 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel';
 import jwt, { Secret } from 'jsonwebtoken';
-import { IUser } from '../interfaces/user';
+import { Select } from '../interfaces/select';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -16,27 +16,27 @@ class UserService {
     return user.save();
   }
 
-  public getUser(username: string) {
-    return User.findOne({ username }).exec();
+  public getUser(username: string, select = Select.default) {
+    return User.findOne({ username }, select).exec();
   }
 
-  public getUserById(id: string) {
-    return User.findById(id).exec();
+  public async getUserById(id: string, select = Select.default) {
+    return User.findById(id, select).exec();
   }
 
-  public updateRefreshToken(id: string, token: string) {
-    return User.findByIdAndUpdate(id, { refreshToken: token }).exec();
+  public updateRefreshToken(id: string, token: string, select = Select.token) {
+    return User.findByIdAndUpdate(id, { refreshToken: token }, { select: select }).exec();
   }
 
-  public removeUser(id: string) {
-    return User.findByIdAndRemove(id).exec();
+  public removeUser(id: string, select = Select.default) {
+    return User.findByIdAndRemove(id, { select: select }).exec();
   }
 
-  public getAllUsers(page = 1, limit = 10) {
-    return User.find({}, '_id username isAdmin created')
+  public getAllUsers(page = 1, limit = 10, select = Select.default): Promise<User[]> {
+    return User.find({}, select)
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ created: -1 })
+      .sort({ createdAt: -1 })
       .exec();
   }
 
@@ -44,26 +44,22 @@ class UserService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  public async generateTokens(user: IUser): Promise<{ accessToken: string; refreshToken: string }> {
+  public async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
     const accessToken = jwt.sign(
       {
-        id: user.id,
+        id: user._id,
         username: user.username,
         isAdmin: user.isAdmin,
       },
       this.TOKEN_KEY,
       { expiresIn: '15m' },
     );
-    const refreshToken = jwt.sign({ id: user.id }, this.TOKEN_KEY, {
+    const refreshToken = jwt.sign({ id: user._id }, this.TOKEN_KEY, {
       expiresIn: '30m',
     });
-    try {
-      await this.updateRefreshToken(user.id, refreshToken);
-      return { accessToken, refreshToken };
-    } catch (err) {
-      console.log(err);
-      throw new Error('500');
-    }
+
+    await this.updateRefreshToken(user._id, refreshToken);
+    return { accessToken, refreshToken };
   }
 }
 export const userService = new UserService();

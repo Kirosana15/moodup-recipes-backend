@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { IUser } from './user';
+import { User } from '../models/userModel';
 
 export interface AuthenticatedBasicRequest extends Request {
-  user?: IUser | undefined;
+  user?: User | undefined;
 }
