@@ -1,13 +1,16 @@
-import { UserObject } from '../interfaces/user';
+import { Select } from '../interfaces/select';
+import { User } from '../models/userModel';
 import { userService } from '../services/userService';
 
 export const basicLogic = async (username: string, password: string, done: (error: any, user?: any) => void) => {
   try {
-    const user = <UserObject>await userService.getUser(username);
+    const userFromDb = await userService.getUser(username, Select.password);
+    const { password: hashedPassword, ...user } = <User>userFromDb?.toObject();
+
     if (!user) {
       return done(null, false);
     }
-    if (!(await userService.comparePassword(password, user.password))) {
+    if (!(await userService.comparePassword(password, hashedPassword))) {
       return done(null, false);
     }
     return done(null, user);

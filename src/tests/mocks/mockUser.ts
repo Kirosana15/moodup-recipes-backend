@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { User as UserType, UserPayload } from '../../interfaces/user';
-import { User } from '../../models/userModel';
+import { User, UserPayload } from '../../models/userModel';
 
 export const mockUsername = faker.internet.userName();
 export const mockPassword = faker.internet.password();
@@ -19,10 +18,10 @@ export const generateUsers = (n: number): UserPayload[] => {
   return Array.from(Array(n), generateUser);
 };
 
-export const saveUser = async (): Promise<UserType> => {
-  return <UserType>await new User(generateUser()).save();
+export const saveUser = async (): Promise<User> => {
+  return <User>await new User(generateUser()).save();
 };
 
-export const saveUsers = async (n: number): Promise<UserType[]> => {
-  return <UserType[]>await User.insertMany(generateUsers(n));
+export const saveUsers = async (n: number): Promise<User[]> => {
+  return <User[]>await User.insertMany(generateUsers(n));
 };

@@ -1,14 +1,23 @@
 import { Schema, Model, model } from 'mongoose';
-import { UserObject } from '../interfaces/user';
 
+export interface User {
+  _id: string;
+  username: string;
+  password: string;
+  isAdmin?: boolean;
+  refreshToken?: string;
+  createdAt: Date;
+}
+
+export type UserPayload = Omit<User, '_id'>;
 interface UserMethods {
   comparePassword(password: string): Promise<boolean>;
   compareToken(token: string): boolean;
 }
 
-type UserModel = Model<UserObject, unknown, UserMethods>;
+type UserModel = Model<User, unknown, UserMethods>;
 
-const userSchema = new Schema<UserObject, UserModel, UserMethods>({
+const userSchema = new Schema<User, UserModel, UserMethods>({
   username: {
     type: String,
     required: true,
@@ -37,4 +46,4 @@ userSchema.methods.compareToken = function (token: string): boolean {
   return token === this.refreshToken;
 };
 
-export const User = model<UserObject, UserModel>('User', userSchema);
+export const User = model<User, UserModel>('User', userSchema);

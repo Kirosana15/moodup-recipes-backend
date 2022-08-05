@@ -3,7 +3,7 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
-import { UserObject } from '../interfaces/user';
+import { Select } from '../interfaces/select';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -16,24 +16,25 @@ class UserService {
     return user.save();
   }
 
-  public getUser(username: string) {
-    return User.findOne({ username }).exec();
+  public getUser(username: string, select = Select.default) {
+    return User.findOne({ username }, select).exec();
   }
 
-  public getUserById(id: string) {
-    return User.findById(id).exec();
+  public async getUserById(id: string, select = Select.default): Promise<User> {
+    console.log(await (<Promise<User>>User.findById(id, 'refreshToken').exec()));
+    return <Promise<User>>User.findById(id, select).exec();
   }
 
-  public updateRefreshToken(id: string, token: string) {
-    return User.findByIdAndUpdate(id, { refreshToken: token }).exec();
+  public updateRefreshToken(id: string, token: string, select = Select.default) {
+    return User.findByIdAndUpdate(id, { refreshToken: token }, { select: select }).exec();
   }
 
-  public removeUser(id: string) {
-    return User.findByIdAndRemove(id).exec();
+  public removeUser(id: string, select = Select.default) {
+    return User.findByIdAndRemove(id, { select: select }).exec();
   }
 
-  public getAllUsers(page = 1, limit = 10): Promise<UserObject[]> {
-    return User.find({}, '_id username isAdmin createdAt')
+  public getAllUsers(page = 1, limit = 10, select = Select.default): Promise<User[]> {
+    return User.find({}, select)
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 })
@@ -44,21 +45,22 @@ class UserService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  public async generateTokens(user: UserObject): Promise<{ accessToken: string; refreshToken: string }> {
+  public async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
+    console.log(user);
     const accessToken = jwt.sign(
       {
-        id: user.id,
+        id: user._id,
         username: user.username,
         isAdmin: user.isAdmin,
       },
       this.TOKEN_KEY,
       { expiresIn: '15m' },
     );
-    const refreshToken = jwt.sign({ id: user.id }, this.TOKEN_KEY, {
+    const refreshToken = jwt.sign({ id: user._id }, this.TOKEN_KEY, {
       expiresIn: '30m',
     });
     try {
-      await this.updateRefreshToken(user.id, refreshToken);
+      await this.updateRefreshToken(user._id, refreshToken);
       return { accessToken, refreshToken };
     } catch (err) {
       console.log(err);
@@ -69,7 +71,7 @@ class UserService {
   public async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string }> {
     const decoded = <JwtPayload>jwt.verify(token, this.TOKEN_KEY);
     try {
-      const user = await this.getUserById(decoded.id);
+      const user = await this.getUserById(decoded.id, Select.token);
       if (!user || token !== user.refreshToken) {
         throw new Error('Invalid token');
       }
