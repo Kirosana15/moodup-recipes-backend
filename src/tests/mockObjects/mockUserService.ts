@@ -15,6 +15,6 @@ export const mockGetUser = jest.fn().mockResolvedValue(generateUser());
 export const mockCreateUser = jest.fn().mockImplementation(username => {
   return {
     username,
-    mockId,
+    _id: mockId,
   };
 });
