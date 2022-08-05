@@ -6,6 +6,8 @@ export const mockUsername = faker.name.firstName();
 export const mockPassword = faker.internet.password();
 export const mockId = faker.database.mongodbObjectId();
 
+export const generateMockId = faker.database.mongodbObjectId;
+
 export const generateUser = (): UserPayload => {
   return {
     username: faker.internet.userName(),

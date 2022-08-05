@@ -1,0 +1,46 @@
+import { setupE2E } from '../setupTests';
+import request from 'supertest';
+import app from '../../app';
+import { StatusCodes } from 'http-status-codes';
+import { userService } from '../../services/userService';
+import { mockRemoveUser } from '../mockObjects/mockUserService';
+import { generateMockId, mockId } from '../mockObjects/mockUser';
+import { generateToken, mockValidToken } from '../mockObjects/mockToken';
+
+setupE2E('usersiddelete-e2e', () => {
+  const removeUserSpy = jest.spyOn(userService, 'removeUser').mockImplementation(mockRemoveUser);
+  describe('DELETE /users/{id} should', () => {
+    test(`respond with ${StatusCodes.INTERNAL_SERVER_ERROR} when error is thrown`, async () => {
+      removeUserSpy.mockRejectedValueOnce('test');
+      const res = await request(app).delete(`/users/${mockId}`).set('Authorization', `Bearer ${mockValidToken}`);
+      expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
+    });
+
+    test(`respond with ${StatusCodes.NOT_FOUND} when id does not exist`, async () => {
+      removeUserSpy.mockResolvedValueOnce(null);
+      const res = await request(app).delete(`/users/${mockId}`).set('Authorization', `Bearer ${mockValidToken}`);
+      expect(res.statusCode).toBe(StatusCodes.NOT_FOUND);
+    });
+
+    test(`respond with ${StatusCodes.FORBIDDEN} when user is not an admin or user to be deleted`, async () => {
+      const res = await request(app)
+        .delete(`/users/${generateMockId()}`)
+        .set('Authorization', `Bearer ${generateToken({ isAdmin: false, id: mockId })}`);
+      expect(res.statusCode).toBe(StatusCodes.FORBIDDEN);
+    });
+    test(`respond with ${StatusCodes.OK} and deleted user if user is an admin`, async () => {
+      const res = await request(app)
+        .delete(`/users/${generateMockId()}`)
+        .set('Authorization', `Bearer ${generateToken({ isAdmin: true, id: mockId })}`);
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.body.username).toBeDefined();
+    });
+    test(`respond with ${StatusCodes.OK} and deleted user if user to delete is the same as logged in user`, async () => {
+      const res = await request(app)
+        .delete(`/users/${mockId}`)
+        .set('Authorization', `Bearer ${generateToken({ isAdmin: false, id: mockId })}`);
+      expect(res.statusCode).toBe(StatusCodes.OK);
+      expect(res.body.username).toBeDefined();
+    });
+  });
+});
