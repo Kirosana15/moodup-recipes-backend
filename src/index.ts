@@ -23,12 +23,8 @@ app.use(morgan('tiny'));
 app.use(express.static('public'));
 
 //database connection
-try {
-  mongoose.connect(DB_URI);
-  console.log('Connected to MongoDB');
-} catch (err) {
-  console.log(err);
-}
+mongoose.connect(DB_URI);
+console.log('Connected to MongoDB');
 
 //swagger setup
 const swaggerOptions = {
@@ -167,5 +163,5 @@ app
     console.log(`Server started on port ${PORT}`);
   })
   .on('error', err => {
-    console.log(err);
+    throw err;
   });
