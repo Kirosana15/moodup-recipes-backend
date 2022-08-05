@@ -25,3 +25,9 @@ export const saveUser = async (): Promise<IUser> => {
 export const saveUsers = async (n: number): Promise<IUser[]> => {
   return <IUser[]>await User.insertMany(generateUsers(n));
 };
+
+export const mockBasicAuthString = (username: string, password: string): string => {
+  const plainString = `${username}:${password}`;
+  const b64String = Buffer.from(plainString).toString('base64');
+  return 'Basic ' + b64String;
+};
