@@ -2,13 +2,13 @@ import 'dotenv/config';
 import request from 'supertest';
 import app from '../../app';
 import { mockPassword, mockUsername } from '../mockObjects/mockUser';
-import { setupTests } from '../setupTests';
+import { setupE2E } from '../setupTests';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import bcrypt from 'bcrypt';
 import { userService } from '../../services/userService';
 import { mockCreateUser } from '../mockObjects/mockUserService';
 
-setupTests('register-e2e', () => {
+setupE2E('register-e2e', () => {
   const createUserSpy = jest.spyOn(userService, 'createUser').mockImplementation(mockCreateUser);
   describe('POST /register should respond', () => {
     test('with created user', async () => {
