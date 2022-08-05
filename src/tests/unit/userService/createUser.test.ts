@@ -15,15 +15,15 @@ setupTests('createUser', () => {
   describe('error thrown when', () => {
     test('username already exists', async () => {
       await userService.createUser(mockUsername, mockPassword);
-      await expect(userService.createUser(mockUsername, mockPassword)).rejects.toThrow();
+      await expect(userService.createUser(mockUsername, mockPassword)).rejects.toThrow('duplicate key error');
     });
 
     test('no username provided', async () => {
-      await expect(userService.createUser('', mockPassword)).rejects.toThrow();
+      await expect(userService.createUser('', mockPassword)).rejects.toThrow('`username` is required');
     });
 
     test('no password provided', async () => {
-      await expect(userService.createUser(mockUsername, '')).rejects.toThrow();
+      await expect(userService.createUser(mockUsername, '')).rejects.toThrow('`password` is required');
     });
   });
 

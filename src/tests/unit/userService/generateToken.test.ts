@@ -19,7 +19,7 @@ setupTests('generateTokens', () => {
   test('saves a refresh token to a user', async () => {
     const user = await saveUser();
     const { refreshToken } = await userService.generateTokens(user);
-    const returnedUser = await User.findById(user.id);
+    const returnedUser = await User.findById(user._id);
     expect(returnedUser?.refreshToken).toEqual(refreshToken);
   });
 
@@ -27,7 +27,7 @@ setupTests('generateTokens', () => {
     const user = await saveUser();
     const { accessToken } = await userService.generateTokens(user);
     const userData = <JwtPayload>jwt.verify(accessToken, secret);
-    expect(userData.id).toBe(user.id);
+    expect(userData.id).toBe(user._id.toString());
     expect(userData.username).toBe(user.username);
     expect(userData.isAdmin).toBe(user.isAdmin);
   });

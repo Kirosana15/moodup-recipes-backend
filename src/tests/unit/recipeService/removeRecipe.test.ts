@@ -26,7 +26,7 @@ setupTests('removeRecipe', () => {
   });
   test('should throw and not remove any recipes if id is not provided', async () => {
     saveRecipes(2);
-    await expect(recipeService.removeRecipe('')).rejects.toThrow();
+    await expect(recipeService.removeRecipe('')).rejects.toThrow('Cast to ObjectId failed');
     expect(await Recipe.countDocuments({})).toBe(2);
   });
 });

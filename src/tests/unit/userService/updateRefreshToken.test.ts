@@ -6,13 +6,13 @@ import { setupTests } from '../../setupTests';
 setupTests('updateRefreshToken', () => {
   test('returns the user with an old token', async () => {
     const newUser = await saveUser();
-    const user = await userService.updateRefreshToken(newUser.id, mockToken);
+    const user = await userService.updateRefreshToken(newUser._id, mockToken);
     expect(user?.refreshToken).toBe(newUser.refreshToken);
   });
 
   test('changes user token in database', async () => {
     const newUser = await saveUser();
-    await userService.updateRefreshToken(newUser.id, mockToken);
+    await userService.updateRefreshToken(newUser._id, mockToken);
     const user = await User.findOne({ username: newUser.username });
     expect(user?.refreshToken).toBe(mockToken);
   });

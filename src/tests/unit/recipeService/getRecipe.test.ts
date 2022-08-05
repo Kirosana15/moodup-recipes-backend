@@ -1,13 +1,7 @@
 import { Recipe } from '../../../models/recipeModel';
 import RecipeService from '../../../services/recipeService';
 
-import {
-  mockBody,
-  mockDate,
-  mockId,
-  mockImage,
-  mockTitle,
-} from '../../mocks/mockRecipe';
+import { mockBody, mockDate, mockId, mockImage, mockTitle } from '../../mocks/mockRecipe';
 
 import { setupTests } from '../../setupTests';
 
@@ -37,7 +31,7 @@ setupTests('getRecipe', () => {
     });
 
     test('when no id is provided', async () => {
-      await expect(recipeService.getRecipe('')).rejects.toThrow();
+      await expect(recipeService.getRecipe('')).rejects.toThrow('Cast to ObjectId failed');
     });
   });
 });

@@ -9,12 +9,7 @@ const recipeService = new RecipeService();
 
 setupTests('createRecipe', () => {
   test('should save new Recipe in a database', async () => {
-    const newRecipe = await recipeService.createRecipe(
-      mockId,
-      mockTitle,
-      mockImage,
-      mockBody
-    );
+    const newRecipe = await recipeService.createRecipe(mockId, mockTitle, mockImage, mockBody);
     const recipe = await Recipe.findById(newRecipe.id);
     expect(recipe).toBeDefined();
     expect(recipe?.title).toBe(mockTitle);
@@ -25,15 +20,13 @@ setupTests('createRecipe', () => {
 
   describe('should throw when', () => {
     test('no title provided', async () => {
-      await expect(
-        recipeService.createRecipe(mockId, '', mockImage, mockBody)
-      ).rejects.toThrow();
+      await expect(recipeService.createRecipe(mockId, '', mockImage, mockBody)).rejects.toThrowError(
+        '`title` is required',
+      );
     });
 
     test('no body provided', async () => {
-      await expect(
-        recipeService.createRecipe(mockId, mockTitle, mockImage, '')
-      ).rejects.toThrow();
+      await expect(recipeService.createRecipe(mockId, mockTitle, mockImage, '')).rejects.toThrow('`body` is required');
     });
   });
 

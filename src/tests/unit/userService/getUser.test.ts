@@ -9,7 +9,7 @@ setupTests('getUser', () => {
     const user = await userService.getUser(mockUsername);
     expect(user).toBeDefined();
     expect(user?.username).toBe(mockUsername);
-    expect(user?.password).toBe(mockPassword);
+    expect(user?.password).toBeUndefined();
   });
 
   describe('no user returned when', () => {

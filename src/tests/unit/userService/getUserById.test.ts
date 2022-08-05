@@ -10,7 +10,7 @@ setupTests('getUserById', () => {
   });
 
   test("throws when id isn't provided", async () => {
-    await expect(userService.getUserById('')).rejects.toThrow();
+    await expect(userService.getUserById('')).rejects.toThrow('Cast to ObjectId failed');
   });
 
   test('fetch User by id', async () => {
@@ -18,9 +18,9 @@ setupTests('getUserById', () => {
       username: mockUsername,
       password: mockPassword,
     }).save();
-    const user = await userService.getUserById(newUser.id);
+    const user = await userService.getUserById(newUser._id);
     expect(user).toBeDefined();
     expect(user?.username).toBe(mockUsername);
-    expect(user?.password).toBe(mockPassword);
+    expect(user?.password).toBeUndefined();
   });
 });
