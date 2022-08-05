@@ -1,8 +1,8 @@
 //Router for recipe endpoints
 
 import express from 'express';
-import AuthController from '../controllers/authController';
-import { RecipeController } from '../controllers/recipeController';
+import authController from '../controllers/authController';
+import recipeController from '../controllers/recipeController';
 import { validate } from '../validators/validators';
 import {
   validateGetRecipes,
@@ -17,9 +17,6 @@ import { authService } from '../services/authService';
 import { Strategy } from '../interfaces/strategy';
 
 const router = express.Router();
-
-const recipeController = new RecipeController();
-const authController = new AuthController();
 
 /**
  * @swagger

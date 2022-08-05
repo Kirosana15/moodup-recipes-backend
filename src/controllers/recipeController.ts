@@ -130,4 +130,4 @@ export class RecipeController {
   }
 }
 
-export default RecipeController;
+export default new RecipeController();

@@ -6,7 +6,6 @@ import Express from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import { GetAllUsersDto, GetUserDto, RegisterDto, RemoveUserDto } from '../interfaces/dto/userDtos';
-import { AuthenticatedBasicRequest } from '../interfaces/requests';
 import { User } from '../models/userModel';
 
 interface MongoError {
@@ -38,14 +37,14 @@ export class UserController {
   }
 
   public async login(
-    req: AuthenticatedBasicRequest,
+    req: Express.Request,
     res: Express.Response,
   ): Promise<Express.Response<{ accessToken: string; refreshToken: string }>> {
     try {
       if (!req.user) {
         return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
       }
-      const newTokens = await userService.generateTokens(req.user);
+      const newTokens = await userService.generateTokens(<User>req.user);
       return res.send(newTokens);
     } catch (err) {
       console.log(err);
@@ -121,4 +120,4 @@ export class UserController {
   }
 }
 
-export default UserController;
+export default new UserController();

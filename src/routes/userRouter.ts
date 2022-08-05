@@ -1,8 +1,8 @@
 //Router for user authentication
 
 import express from 'express';
-import { UserController } from '../controllers/userController';
-import AuthController from '../controllers/authController';
+import userController from '../controllers/userController';
+import authController from '../controllers/authController';
 import { validate } from '../validators/validators';
 import {
   validateRegister,
@@ -14,8 +14,6 @@ import { Strategy } from '../interfaces/strategy';
 import { authService } from '../services/authService';
 
 const router = express.Router();
-const userController = new UserController();
-const authController = new AuthController();
 
 /**
  * @swagger
