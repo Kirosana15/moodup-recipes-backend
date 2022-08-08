@@ -26,12 +26,12 @@ setupE2E('login-e2e', () => {
 
     test(`with ${StatusCodes.UNAUTHORIZED} when username is not provided`, async () => {
       const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString('', mockPassword));
-      expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
 
     test(`with ${StatusCodes.UNAUTHORIZED} when password is not provided`, async () => {
       const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, ''));
-      expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
+      expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
     });
     test(`with ${StatusCodes.UNAUTHORIZED} and error message "Invalid credentials" when wrong credentials are entered`, async () => {
       getUsersSpy.mockResolvedValueOnce(null);
@@ -58,6 +58,31 @@ setupE2E('login-e2e', () => {
         .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
+    });
+
+    test(`with ${StatusCodes.BAD_REQUEST} when username is too short`, async () => {
+      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString('a', mockPassword));
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(res.body.errors).toBeTruthy();
+    });
+    test(`with ${StatusCodes.BAD_REQUEST} when username is too long`, async () => {
+      const res = await request(app)
+        .post(ENDPOINT)
+        .set('Authorization', mockBasicAuthString('1234567890123456', mockPassword));
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(res.body.errors).toBeTruthy();
+    });
+    test(`with ${StatusCodes.BAD_REQUEST} when username contains illegal characters`, async () => {
+      const res = await request(app)
+        .post(ENDPOINT)
+        .set('Authorization', mockBasicAuthString('12345678*', mockPassword));
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(res.body.errors).toBeTruthy();
+    });
+    test(`with ${StatusCodes.BAD_REQUEST} when password is too short`, async () => {
+      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, '1234'));
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(res.body.errors).toBeTruthy();
     });
   });
 });
