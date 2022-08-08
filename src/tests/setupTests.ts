@@ -48,3 +48,11 @@ export const setupTests = (testName: string, runTests: () => void) => {
     runTests();
   });
 };
+export const setupE2E = (testName: string, runTests: () => void) => {
+  describe(`Testing ${testName}`, () => {
+    afterEach(async () => {
+      jest.clearAllMocks();
+    });
+    runTests();
+  });
+};
