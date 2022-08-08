@@ -91,15 +91,15 @@ export class UserController {
   public async removeUser(req: Express.Request, res: Express.Response) {
     const { id } = <RemoveUserDto>matchedData(req);
     try {
-      const userToRemove = await userService.removeUser(id);
-      if (userToRemove) {
-        if (req.user?.isAdmin || req.user?.id == id) {
+      if (req.user?.isAdmin || req.user?.id == id) {
+        const userToRemove = await userService.removeUser(id);
+        if (userToRemove) {
           return res.status(StatusCodes.OK).send(userToRemove);
         } else {
-          return res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
+          return res.status(StatusCodes.NOT_FOUND).send('User not found');
         }
       } else {
-        return res.status(StatusCodes.NOT_FOUND).send('User not found');
+        return res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
       }
     } catch (err) {
       console.log(err);

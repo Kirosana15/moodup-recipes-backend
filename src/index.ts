@@ -146,7 +146,6 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-//listening
 app
   .listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);

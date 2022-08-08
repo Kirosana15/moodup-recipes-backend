@@ -7,6 +7,8 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { userService } from '../../services/userService';
 import { mockComparePassword, mockGenerateTokens, mockGetUser } from '../mockObjects/mockUserService';
 
+const ENDPOINT = '/login';
+
 setupE2E('login-e2e', () => {
   const generateTokensSpy = jest.spyOn(userService, 'generateTokens').mockImplementation(mockGenerateTokens);
   const getUsersSpy = jest.spyOn(userService, 'getUser').mockImplementation(mockGetUser);
@@ -14,7 +16,7 @@ setupE2E('login-e2e', () => {
   describe('POST /login responds', () => {
     test('with set of tokens for a logged in user', async () => {
       const res = await request(app)
-        .post('/login')
+        .post(ENDPOINT)
 
         .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       expect(res.statusCode).toBe(StatusCodes.OK);
@@ -23,22 +25,22 @@ setupE2E('login-e2e', () => {
     });
 
     test(`with ${StatusCodes.UNAUTHORIZED} when username is not provided`, async () => {
-      const res = await request(app).post('/login').set('Authorization', mockBasicAuthString('', mockPassword));
+      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString('', mockPassword));
       expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
     });
 
     test(`with ${StatusCodes.UNAUTHORIZED} when password is not provided`, async () => {
-      const res = await request(app).post('/login').set('Authorization', mockBasicAuthString(mockUsername, ''));
+      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, ''));
       expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
     });
     test(`with ${StatusCodes.UNAUTHORIZED} and error message "Invalid credentials" when wrong credentials are entered`, async () => {
       getUsersSpy.mockResolvedValueOnce(null);
       const resNoUser = await request(app)
-        .post('/login')
+        .post(ENDPOINT)
         .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       comparePasswordSpy.mockResolvedValueOnce(false);
       const resBadPassword = await request(app)
-        .post('/login')
+        .post(ENDPOINT)
         .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
 
       expect(resNoUser.statusCode).toBe(StatusCodes.UNAUTHORIZED);
@@ -52,7 +54,7 @@ setupE2E('login-e2e', () => {
         throw new Error('test');
       });
       const res = await request(app)
-        .post('/login')
+        .post(ENDPOINT)
         .set('Authorization', mockBasicAuthString(mockUsername, mockPassword));
       expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
