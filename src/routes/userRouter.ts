@@ -9,6 +9,7 @@ import {
   validateGetAllUsers,
   validateGetUser,
   validateRemoveUser,
+  validateLogin,
 } from '../validators/userValidators';
 import { Strategy } from '../interfaces/strategy';
 import { authService } from '../services/authService';
@@ -62,7 +63,7 @@ router.post('/register', validate(validateRegister), userController.register);
  *         schema:
  *           $ref: '#/components/schemas/Tokens'
  */
-router.post('/login', authService.authenticate(Strategy.Basic), userController.login);
+router.post('/login', validate(validateLogin), authService.authenticate(Strategy.Basic), userController.login);
 
 /**
  * @swagger
