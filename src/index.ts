@@ -1,28 +1,17 @@
 // eslint-disable-next-line no-useless-escape
 import 'dotenv/config';
-import express, { Application } from 'express';
-import morgan from 'morgan';
+import mongoose from 'mongoose';
+import app from './app';
+
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import m2s from 'mongoose-to-swagger';
 import { User } from './models/userModel';
 import { Recipe } from './models/recipeModel';
 
-import mongoose from 'mongoose';
-import userRouter from './routes/userRouter';
-import recipeRouter from './routes/recipeRouter';
-
 const PORT = process.env.PORT || 300;
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
 
-const app: Application = express();
-
-//adding middleware
-app.use(express.json());
-app.use(morgan('tiny'));
-app.use(express.static('public'));
-
-//database connection
 try {
   mongoose.connect(DB_URI);
   console.log('Connected to MongoDB');
@@ -156,10 +145,6 @@ const swaggerOptions = {
 };
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-//routing
-app.use(userRouter);
-app.use(recipeRouter);
 
 //listening
 app

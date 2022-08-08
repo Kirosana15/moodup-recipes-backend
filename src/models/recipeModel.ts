@@ -1,17 +1,9 @@
-import { Schema, Types, model } from 'mongoose';
-
-interface IRecipe {
-  _id: Types.ObjectId;
-  ownerId: Types.ObjectId;
-  title: string;
-  imageUrl: string;
-  body: string;
-  createdAt: Date;
-}
+import { Schema, model } from 'mongoose';
+import { IRecipe } from '../interfaces/recipe';
 
 const recipeSchema = new Schema<IRecipe>({
   ownerId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
     ref: 'User',
   },
