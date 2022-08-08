@@ -6,6 +6,7 @@ import { setupE2E } from '../setupTests';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { userService } from '../../services/userService';
 import { mockComparePassword, mockGenerateTokens, mockGetUser } from '../mockObjects/mockUserService';
+import { faker } from '@faker-js/faker';
 
 const ENDPOINT = '/login';
 
@@ -59,30 +60,37 @@ setupE2E('login-e2e', () => {
       expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.text).toBe(ReasonPhrases.INTERNAL_SERVER_ERROR);
     });
-
-    test(`with ${StatusCodes.BAD_REQUEST} when username is too short`, async () => {
-      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString('a', mockPassword));
-      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(res.body.errors).toBeTruthy();
-    });
-    test(`with ${StatusCodes.BAD_REQUEST} when username is too long`, async () => {
-      const res = await request(app)
-        .post(ENDPOINT)
-        .set('Authorization', mockBasicAuthString('1234567890123456', mockPassword));
-      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(res.body.errors).toBeTruthy();
-    });
-    test(`with ${StatusCodes.BAD_REQUEST} when username contains illegal characters`, async () => {
-      const res = await request(app)
-        .post(ENDPOINT)
-        .set('Authorization', mockBasicAuthString('12345678*', mockPassword));
-      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(res.body.errors).toBeTruthy();
-    });
-    test(`with ${StatusCodes.BAD_REQUEST} when password is too short`, async () => {
-      const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, '1234'));
-      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(res.body.errors).toBeTruthy();
+    describe('validation tests', () => {
+      test(`with ${StatusCodes.BAD_REQUEST} when username is too short`, async () => {
+        const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString('a', mockPassword));
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(res.body.errors).toBeTruthy();
+      });
+      test(`with ${StatusCodes.BAD_REQUEST} when username is too long`, async () => {
+        const res = await request(app)
+          .post(ENDPOINT)
+          .set('Authorization', mockBasicAuthString('1234567890123456', mockPassword));
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(res.body.errors).toBeTruthy();
+      });
+      test(`with ${StatusCodes.BAD_REQUEST} when username contains illegal characters`, async () => {
+        const res = await request(app)
+          .post(ENDPOINT)
+          .set('Authorization', mockBasicAuthString('12345678*', mockPassword));
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(res.body.errors).toBeTruthy();
+      });
+      test(`with ${StatusCodes.BAD_REQUEST} when password is too short`, async () => {
+        const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, '1234'));
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(res.body.errors).toBeTruthy();
+      });
+      test(`with ${StatusCodes.BAD_REQUEST} when password is too long`, async () => {
+        const password = faker.internet.password(201);
+        const res = await request(app).post(ENDPOINT).set('Authorization', mockBasicAuthString(mockUsername, password));
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(res.body.errors).toBeTruthy();
+      });
     });
   });
 });

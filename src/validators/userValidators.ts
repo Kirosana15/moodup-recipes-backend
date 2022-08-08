@@ -10,7 +10,8 @@ const validateBasic: CustomValidator = (auth: string) => {
   const basicString = auth.split(' ')[1];
   const [username, password] = Buffer.from(basicString, 'base64').toString('utf-8').split(':');
   const isValidUsername = username.length >= 3 && username.length < 15 && username.match(/^[\w]+$/);
-  const isValidPassword = password.length >= 6 && username.length < 200;
+  console.log(password.length);
+  const isValidPassword = password.length >= 6 && password.length < 200;
   return isValidPassword && isValidUsername;
 };
 
