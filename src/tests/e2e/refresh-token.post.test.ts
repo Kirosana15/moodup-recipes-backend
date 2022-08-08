@@ -6,7 +6,7 @@ import { setupE2E } from '../setupTests';
 import { StatusCodes } from 'http-status-codes';
 import { userService } from '../../services/userService';
 import { mockGenerateTokens } from '../mockObjects/mockUserService';
-import { mockValidToken } from '../mockObjects/mockToken';
+import { generateToken, mockValidToken } from '../mockObjects/mockToken';
 import { MATCH_JWT } from '../constants';
 
 setupE2E('refresh-token-e2e', () => {
@@ -23,5 +23,18 @@ setupE2E('refresh-token-e2e', () => {
     expect(res.body.refreshToken).not.toBe(refreshToken);
     expect(generateTokensSpy).toBeCalledTimes(1);
     expect(getUserByIdSpy).toBeCalledTimes(1);
+  });
+  test(`should respond with ${StatusCodes.UNAUTHORIZED} when token doesn't match token in database`, async () => {
+    const res = await request(app)
+      .post('/refresh-token')
+      .set('Authorization', `Bearer ${generateToken({})}`);
+    console.log(res.text);
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
+  });
+
+  test(`should respond with ${StatusCodes.UNAUTHORIZED} when token is malformed`, async () => {
+    const res = await request(app).post('/refresh-token').set('Authorization', `Bearer t`);
+    console.log(res.text);
+    expect(res.statusCode).toBe(StatusCodes.UNAUTHORIZED);
   });
 });
