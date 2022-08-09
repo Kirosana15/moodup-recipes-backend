@@ -11,13 +11,13 @@ export const refreshBearerLogic = async (token: string, done: (error: any, user?
     try {
       const user = <IUser>await userService.getUserById(decoded.id);
       if (!user || token !== user.refreshToken) {
-        throw new Error('Invalid token');
+        return done(null, false);
       }
       return done(null, user);
     } catch (err) {
       return done(err);
     }
   } catch (err) {
-    return done(err);
+    return done(null, false);
   }
 };

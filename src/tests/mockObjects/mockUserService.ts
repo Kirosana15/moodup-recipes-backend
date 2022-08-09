@@ -1,10 +1,10 @@
-import { mockValidToken } from './mockToken';
+import { generateToken } from './mockToken';
 import { generateUser, generateUsers, mockId } from './mockUser';
 
 export const mockComparePassword = jest.fn().mockResolvedValue(true);
 export const mockGenerateTokens = jest
   .fn()
-  .mockResolvedValue({ accessToken: mockValidToken, refreshToken: mockValidToken });
+  .mockResolvedValue({ accessToken: generateToken({}), refreshToken: generateToken({}) });
 export const mockGetAllUsers = jest.fn().mockImplementation((limit = 5) => {
   generateUsers(limit);
 });

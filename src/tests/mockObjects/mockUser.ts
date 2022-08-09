@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { IUser, UserPayload } from '../../interfaces/user';
 import { User } from '../../models/userModel';
+import { generateToken } from './mockToken';
 
 export const mockUsername = faker.name.firstName();
 export const mockPassword = faker.internet.password();
@@ -16,8 +17,17 @@ export const generateUser = (): UserPayload => {
   };
 };
 
-export const generateUsers = (count: number): UserPayload[] => {
-  return Array.from(Array(count), generateUser);
+export const generateUserWithToken = (refreshToken = generateToken({})): UserPayload => {
+  return {
+    username: faker.internet.userName(),
+    password: faker.internet.password(),
+    createdAt: faker.date.past(),
+    refreshToken: refreshToken,
+  };
+};
+
+export const generateUsers = (n: number): UserPayload[] => {
+  return Array.from(Array(n), generateUser);
 };
 
 export const saveUser = async (): Promise<IUser> => {
