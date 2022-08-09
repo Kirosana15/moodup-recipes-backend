@@ -67,4 +67,4 @@ class RecipeService {
   }
 }
 
-export default RecipeService;
+export default new RecipeService();

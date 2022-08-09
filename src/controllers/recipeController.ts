@@ -1,5 +1,5 @@
 import { matchedData } from 'express-validator';
-import RecipeService from '../services/recipeService';
+import recipeService from '../services/recipeService';
 import Express from 'express';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import {
@@ -12,10 +12,6 @@ import {
   SearchRecipesDto,
 } from '../interfaces/dto/recipeDtos';
 import { IUser } from '../interfaces/user';
-
-const recipeService = new RecipeService();
-
-// RecipeController class for recipe related requests
 export class RecipeController {
   // Returns a list of all recipes
   public async getAllRecipes(req: Express.Request, res: Express.Response) {
