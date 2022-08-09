@@ -16,16 +16,16 @@ export const generateUser = (): UserPayload => {
   };
 };
 
-export const generateUsers = (n: number): UserPayload[] => {
-  return Array.from(Array(n), generateUser);
+export const generateUsers = (count: number): UserPayload[] => {
+  return Array.from(Array(count), generateUser);
 };
 
 export const saveUser = async (): Promise<IUser> => {
   return <IUser>await new User(generateUser()).save();
 };
 
-export const saveUsers = async (n: number): Promise<IUser[]> => {
-  return <IUser[]>await User.insertMany(generateUsers(n));
+export const saveUsers = async (count: number): Promise<IUser[]> => {
+  return <IUser[]>await User.insertMany(generateUsers(count));
 };
 
 export const mockBasicAuthString = (username: string, password: string): string => {

@@ -18,8 +18,8 @@ export const generateRecipe = (): RecipePayload => {
   };
 };
 
-export const generateRecipes = (n: number): RecipePayload[] => {
-  return Array.from(Array(n), generateRecipe);
+export const generateRecipes = (count: number): RecipePayload[] => {
+  return Array.from(Array(count), generateRecipe);
 };
 
 export const saveRecipe = async (): Promise<IRecipe> => {
