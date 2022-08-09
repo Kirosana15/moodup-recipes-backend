@@ -8,13 +8,19 @@ export const mockImage = faker.image.food();
 export const mockBody = faker.commerce.productDescription();
 export const mockDate = faker.date.past();
 
-export const generateRecipe = (): RecipePayload => {
+export const generateRecipe = (
+  ownerId?: string,
+  title?: string,
+  imageUrl?: string,
+  body?: string,
+  createdAt?: Date,
+): RecipePayload => {
   return {
-    ownerId: faker.database.mongodbObjectId(),
-    title: `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`,
-    imageUrl: faker.image.food(),
-    body: faker.commerce.productDescription(),
-    createdAt: faker.date.past(),
+    ownerId: ownerId || faker.database.mongodbObjectId(),
+    title: title || `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`,
+    imageUrl: imageUrl || faker.image.food(),
+    body: body || faker.commerce.productDescription(),
+    createdAt: createdAt || faker.date.past(),
   };
 };
 
