@@ -12,29 +12,29 @@ export const connectToDb = async (dbName: string) => {
   }
 };
 
-export const clearCollection = async (collection: Model<undefined>) => {
+export const clearCollection = async (collection: Model<undefined>): Promise<void> => {
   await collection.deleteMany();
 };
-export const clearAllCollections = async () => {
+export const clearAllCollections = async (): Promise<void> => {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName];
     await collection.deleteMany({});
   }
 };
-const removeAllCollections = async () => {
+const removeAllCollections = async (): Promise<void> => {
   const collections = Object.keys(mongoose.connection.collections);
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName];
     await collection.drop();
   }
 };
-export const closeConnection = async () => {
+export const closeConnection = async (): Promise<void> => {
   await removeAllCollections();
   mongoose.disconnect();
 };
 
-export const setupTests = (testName: string, runTests: () => void) => {
+export const setupTests = (testName: string, runTests: () => void): void => {
   describe(`Testing ${testName}`, () => {
     beforeAll(async () => {
       await connectToDb(`${testName}-test`);
@@ -48,7 +48,7 @@ export const setupTests = (testName: string, runTests: () => void) => {
     runTests();
   });
 };
-export const setupE2E = (testName: string, runTests: () => void) => {
+export const setupE2E = (testName: string, runTests: () => void): void => {
   describe(`Testing ${testName}`, () => {
     afterEach(async () => {
       jest.clearAllMocks();
