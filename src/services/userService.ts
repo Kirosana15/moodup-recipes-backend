@@ -3,7 +3,7 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel';
 import jwt, { Secret } from 'jsonwebtoken';
-import { Select } from '../interfaces/select';
+import { UserSelect } from '../interfaces/select';
 
 //UserService class for database operations on the "users" collection
 class UserService {
@@ -16,23 +16,23 @@ class UserService {
     return user.save();
   }
 
-  public getUser(username: string, select = Select.default) {
+  public getUser(username: string, select = UserSelect.default) {
     return User.findOne({ username }, select).exec();
   }
 
-  public async getUserById(id: string, select = Select.default) {
+  public async getUserById(id: string, select = UserSelect.default) {
     return User.findById(id, select).exec();
   }
 
-  public updateRefreshToken(id: string, token: string, select = Select.token) {
+  public updateRefreshToken(id: string, token: string, select = UserSelect.token) {
     return User.findByIdAndUpdate(id, { refreshToken: token }, { select: select }).exec();
   }
 
-  public removeUser(id: string, select = Select.default) {
+  public removeUser(id: string, select = UserSelect.default) {
     return User.findByIdAndRemove(id, { select: select }).exec();
   }
 
-  public getAllUsers(page = 1, limit = 10, select = Select.default): Promise<User[]> {
+  public getAllUsers(page = 1, limit = 10, select = UserSelect.default): Promise<User[]> {
     return User.find({}, select)
       .skip((page - 1) * limit)
       .limit(limit)
