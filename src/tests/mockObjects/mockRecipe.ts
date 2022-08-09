@@ -24,11 +24,11 @@ export const generateRecipe = (
   createdAt?: Date,
 ): RecipePayload => {
   return {
-    ownerId: ownerId || mockId,
-    title: title || mockTitle,
-    imageUrl: imageUrl || mockImage,
-    body: body || mockBody,
-    createdAt: createdAt || mockDate,
+    ownerId: ownerId || ownerId || mockId,
+    title: title || title || mockTitle,
+    imageUrl: imageUrl || imageUrl || mockImage,
+    body: body || body || mockBody,
+    createdAt: createdAt || createdAt || mockDate,
   };
 };
 
