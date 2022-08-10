@@ -38,15 +38,19 @@ setupE2E('recipes-get-e2e', () => {
     });
 
     test(`${StatusCodes.BAD_REQUEST} when limit is not a number`, async () => {
-      const res = await request(app).get(ENDPOINT + mockQuery + '?limit=NaN');
+      const res = await request(app)
+        .get(ENDPOINT + mockQuery + '?limit=NaN')
+        .set('Authorization', TOKEN);
 
-      expect(res.status).toBe(StatusCodes.UNAUTHORIZED);
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
     });
 
     test(`${StatusCodes.BAD_REQUEST} when page is not a number`, async () => {
-      const res = await request(app).get(ENDPOINT + mockQuery + '?page=NaN');
+      const res = await request(app)
+        .get(ENDPOINT + mockQuery + '?page=NaN')
+        .set('Authorization', TOKEN);
 
-      expect(res.status).toBe(StatusCodes.UNAUTHORIZED);
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
     });
   });
 });
