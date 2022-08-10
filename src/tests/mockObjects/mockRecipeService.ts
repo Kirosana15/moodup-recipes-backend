@@ -8,7 +8,7 @@ export const mockGetAllRecipes = jest.fn().mockImplementation((limit = 10) => Pr
 
 export const mockGetRecipesByOwner = jest
   .fn()
-  .mockImplementation((limit = 10) => Promise.resolve(generateRecipes(limit)));
+  .mockImplementation((_, limit = 10) => Promise.resolve(generateRecipes(limit)));
 
 export const mockUpdateRecipe = jest
   .fn()
