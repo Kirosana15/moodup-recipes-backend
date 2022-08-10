@@ -7,6 +7,7 @@ export const mockTitle = `${faker.word.adverb()} ${faker.word.adjective()} ${fak
 export const mockImage = faker.image.food();
 export const mockBody = faker.commerce.productDescription();
 export const mockDate = faker.date.past();
+export const mockQuery = faker.word.noun();
 
 export const createRecipe = (title?: string, imageUrl?: string, body?: string) => {
   return {
