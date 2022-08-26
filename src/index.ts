@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-useless-escape
-
 import 'dotenv/config';
 
 import mongoose from 'mongoose';
