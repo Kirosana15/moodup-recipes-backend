@@ -1,20 +1,21 @@
 //Router for recipe endpoints
 
 import express from 'express';
+
 import authController from '../controllers/authController';
 import { RecipeController } from '../controllers/recipeController';
-import { validate } from '../validators/validators';
+import { Strategy } from '../interfaces/strategy';
+import { authService } from '../services/authService';
 import {
-  validateGetRecipes,
+  validateCreateRecipe,
   validateGetAllRecipes,
   validateGetRecipe,
-  validateCreateRecipe,
-  validateUpdateRecipe,
+  validateGetRecipes,
   validateRemoveRecipe,
   validateSearchRecipes,
+  validateUpdateRecipe,
 } from '../validators/recipeValidators';
-import { authService } from '../services/authService';
-import { Strategy } from '../interfaces/strategy';
+import { validate } from '../validators/validators';
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ const recipeController = new RecipeController();
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: page
  *         description: Page number
@@ -41,10 +42,12 @@ const recipeController = new RecipeController();
  *     responses:
  *       200:
  *         description: Returns a recipe list
- *         schema:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Recipe'
  */
 router.get(
   '/recipes',
@@ -63,7 +66,7 @@ router.get(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: recipe
  *         type: object
@@ -75,8 +78,10 @@ router.get(
  *     responses:
  *       201:
  *         description: Returns a created recipe
- *         schema:
- *           $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Recipe'
  */
 router.post(
   '/recipes',
@@ -95,7 +100,7 @@ router.post(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: page
  *         description: Page number
@@ -106,10 +111,12 @@ router.post(
  *     responses:
  *       200:
  *         description: Returns a recipe list
- *         schema:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Recipe'
  */
 router.get(
   '/recipes/all',
@@ -129,7 +136,7 @@ router.get(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         description: Id of the recipe
@@ -138,8 +145,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Returns a recipe
- *         schema:
- *           $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Recipe'
  */
 router.get(
   '/recipes/:id',
@@ -158,7 +167,7 @@ router.get(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: New recipe
  *         type: object
@@ -170,8 +179,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Returns an updated recipe
- *         schema:
- *           $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Recipe'
  */
 router.put(
   '/recipes/:id',
@@ -190,7 +201,7 @@ router.put(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         description: Id of the recipe
@@ -199,8 +210,10 @@ router.put(
  *     responses:
  *       200:
  *         description: Returns a deleted recipe
- *         schema:
- *           $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Recipe'
  */
 router.delete(
   '/recipes/:id',
@@ -219,7 +232,7 @@ router.delete(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: query
  *         description: query to search for
@@ -228,8 +241,10 @@ router.delete(
  *     responses:
  *       200:
  *         description: Returns a recipe
- *         schema:
- *           $ref: '#/components/schemas/Recipe'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Recipe'
  */
 router.get(
   '/recipes/search/:query',

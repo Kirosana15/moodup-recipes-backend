@@ -1,18 +1,19 @@
 //Router for user authentication
 
 import express from 'express';
-import { UserController } from '../controllers/userController';
+
 import authController from '../controllers/authController';
-import { validate } from '../validators/validators';
-import {
-  validateRegister,
-  validateGetAllUsers,
-  validateGetUser,
-  validateRemoveUser,
-  validateLogin,
-} from '../validators/userValidators';
+import { UserController } from '../controllers/userController';
 import { Strategy } from '../interfaces/strategy';
 import { authService } from '../services/authService';
+import {
+  validateGetAllUsers,
+  validateGetUser,
+  validateLogin,
+  validateRegister,
+  validateRemoveUser,
+} from '../validators/userValidators';
+import { validate } from '../validators/validators';
 
 const router = express.Router();
 const userController = new UserController();
@@ -24,20 +25,27 @@ const userController = new UserController();
  *     tags:
  *       - Users
  *     description: Creates a new user
- *     produces:
- *       - application/json
  *     parameters:
- *       - name: login
- *         description: Login object
+ *       - name: user
+ *         description: User object
  *         in: body
  *         required: true
- *         schema:
+ *         content:
  *           $ref: '#/components/schemas/Login'
  *     responses:
  *       201:
  *         description: Successfully created user
- *         schema:
- *           $ref: '#/components/schemas/User'
+ *         content:
+ *          application/json:
+ *           schema:
+ *            $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Duplicate username
+ *         content:
+ *          text/plain:
+ *           schema:
+ *            type: string
+ *            example: User already exists
  */
 router.post('/register', validate(validateRegister), userController.register);
 
@@ -45,23 +53,20 @@ router.post('/register', validate(validateRegister), userController.register);
  * @swagger
  * /login:
  *   post:
+ *     security:
+ *       - basicAuth: []
  *     tags:
  *       - Users
  *     description: Logs in a user
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: login
- *         description: Login object
- *         in: body
- *         required: true
- *         schema:
- *           $ref: '#/components/schemas/Login'
  *     responses:
  *       200:
  *         description: Successfully logged in
- *         schema:
- *           $ref: '#/components/schemas/Tokens'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Tokens'
+ *       401:
+ *          description: Authentication failed
  */
 router.post('/login', validate(validateLogin), authService.authenticate(Strategy.Basic), userController.login);
 
@@ -75,7 +80,7 @@ router.post('/login', validate(validateLogin), authService.authenticate(Strategy
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: page
  *         description: Page number
@@ -86,10 +91,12 @@ router.post('/login', validate(validateLogin), authService.authenticate(Strategy
  *     responses:
  *       200:
  *         description: Returns a list of all users
- *         schema:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UserBasicData'
+ *         content:
+ *          application/json:
+ *            schema:
+ *             type: array
+ *             items:
+ *              $ref: '#/components/schemas/UserBasicData'
  */
 router.get(
   '/users',
@@ -109,7 +116,7 @@ router.get(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         description: Id of the user
@@ -118,8 +125,16 @@ router.get(
  *     responses:
  *       200:
  *         description: Returns user information
- *         schema:
- *           $ref: '#/components/schemas/User'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ *         content:
+ *          text/plain:
+ *            schema:
+ *              type: string
  */
 router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(validateGetUser), userController.getUser);
 /**
@@ -132,7 +147,7 @@ router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(val
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         description: Id of the user
@@ -140,8 +155,16 @@ router.get('/users/:id', authService.authenticate(Strategy.Bearer), validate(val
  *     responses:
  *       200:
  *         description: Returns deleted users' information
- *         schema:
- *           $ref: '#/components/schemas/User'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ *         content:
+ *          text/plain:
+ *            schema:
+ *              type: string
  */
 router.delete(
   '/users/:id',
@@ -160,12 +183,14 @@ router.delete(
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns profile of a logged in user
- *         schema:
- *           $ref: '#/components/schemas/TokenData'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/TokenData'
  */
 router.get('/profile', authService.authenticate(Strategy.Bearer), userController.getProfile);
 
@@ -179,12 +204,14 @@ router.get('/profile', authService.authenticate(Strategy.Bearer), userController
  *     produces:
  *       - application/json
  *     security:
- *       - JWT: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Returns new tokens
- *         schema:
- *           $ref: '#/components/schemas/Tokens'
+ *         content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Tokens'
  */
 router.post('/refresh-token', authService.authenticate(Strategy.RefreshBearer), userController.refreshToken);
 
