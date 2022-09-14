@@ -1,5 +1,3 @@
-//Service for database operations on the "recipes" collection
-
 import { Recipe } from '../models/recipeModel';
 
 class RecipeService {
@@ -48,4 +46,4 @@ class RecipeService {
   }
 }
 
-export default RecipeService;
+export default new RecipeService();

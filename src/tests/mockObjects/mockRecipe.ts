@@ -3,23 +3,38 @@ import { RecipePayload, IRecipe } from '../../interfaces/recipe';
 import { Recipe } from '../../models/recipeModel';
 
 export const mockId = faker.database.mongodbObjectId();
-export const mockTitle = `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`;
+export const mockTitle = `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`.slice(0, 20);
 export const mockImage = faker.image.food();
 export const mockBody = faker.commerce.productDescription();
 export const mockDate = faker.date.past();
+export const mockQuery = faker.word.noun();
 
-export const generateRecipe = (): RecipePayload => {
+export const createRecipe = (title?: string, imageUrl?: string, body?: string) => {
   return {
-    ownerId: faker.database.mongodbObjectId(),
-    title: `${faker.word.adverb()} ${faker.word.adjective()} ${faker.word.noun()}`,
-    imageUrl: faker.image.food(),
-    body: faker.commerce.productDescription(),
-    createdAt: faker.date.past(),
+    title: title || mockTitle,
+    imageUrl: imageUrl || mockImage,
+    body: body || mockBody,
+  };
+};
+
+export const generateRecipe = (
+  ownerId?: string,
+  title?: string,
+  imageUrl?: string,
+  body?: string,
+  createdAt?: Date,
+): RecipePayload => {
+  return {
+    ownerId: ownerId || mockId,
+    title: title || mockTitle,
+    imageUrl: imageUrl || mockImage,
+    body: body || mockBody,
+    createdAt: createdAt || mockDate,
   };
 };
 
 export const generateRecipes = (count: number): RecipePayload[] => {
-  return Array.from(Array(count), generateRecipe);
+  return Array.from(Array(count), () => generateRecipe());
 };
 
 export const saveRecipe = async (): Promise<IRecipe> => {

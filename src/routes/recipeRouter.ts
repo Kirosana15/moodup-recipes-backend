@@ -3,9 +3,9 @@
 import express from 'express';
 
 import authController from '../controllers/authController';
-import { RecipeController } from '../controllers/recipeController';
+import recipeController from '../controllers/recipeController';
 import { Strategy } from '../interfaces/strategy';
-import { authService } from '../services/authService';
+
 import {
   validateCreateRecipe,
   validateGetAllRecipes,
@@ -18,8 +18,6 @@ import {
 import { validate } from '../validators/validators';
 
 const router = express.Router();
-
-const recipeController = new RecipeController();
 
 /**
  * @swagger

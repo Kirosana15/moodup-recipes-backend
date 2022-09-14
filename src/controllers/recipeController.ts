@@ -1,5 +1,5 @@
 import { matchedData } from 'express-validator';
-import RecipeService from '../services/recipeService';
+import recipeService from '../services/recipeService';
 import Express from 'express';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import {
@@ -12,10 +12,6 @@ import {
   SearchRecipesDto,
 } from '../interfaces/dto/recipeDtos';
 import { IUser } from '../interfaces/user';
-
-const recipeService = new RecipeService();
-
-// RecipeController class for recipe related requests
 export class RecipeController {
   // Returns a list of all recipes
   public async getAllRecipes(req: Express.Request, res: Express.Response) {
@@ -75,20 +71,20 @@ export class RecipeController {
     const { id, title, imageUrl, body } = <UpdateRecipeDto>matchedData(req);
     const user = <IUser>req.user;
     try {
-      const recipe = await recipeService.updateRecipe(id, title, imageUrl, body);
+      const recipe = await recipeService.getRecipe(id);
       if (recipe) {
         if (recipe.ownerId.toString() === user.id || user.isAdmin) {
           const newRecipe = await recipeService.updateRecipe(id, title, imageUrl, body);
-          res.send(newRecipe);
+          return res.send(newRecipe);
         } else {
-          res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
+          return res.status(StatusCodes.FORBIDDEN).send(ReasonPhrases.FORBIDDEN);
         }
       } else {
-        res.status(StatusCodes.NOT_FOUND).send('Recipe not found');
+        return res.status(StatusCodes.NOT_FOUND).send('Recipe not found');
       }
     } catch (err) {
       console.log(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
     }
   }
   // Deletes a recipe with provided id if the user is the owner or an admin
@@ -130,4 +126,4 @@ export class RecipeController {
   }
 }
 
-export default RecipeController;
+export default new RecipeController();
