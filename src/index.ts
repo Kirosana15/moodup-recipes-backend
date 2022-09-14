@@ -1,13 +1,13 @@
-// eslint-disable-next-line no-useless-escape
 import 'dotenv/config';
-import mongoose from 'mongoose';
-import app from './app';
 
+import mongoose from 'mongoose';
+import m2s from 'mongoose-to-swagger';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import m2s from 'mongoose-to-swagger';
-import { User } from './models/userModel';
+
+import app from './app';
 import { Recipe } from './models/recipeModel';
+import { User } from './models/userModel';
 
 const PORT = process.env.PORT || 300;
 const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/dev';
@@ -22,7 +22,7 @@ try {
 //swagger setup
 const swaggerOptions = {
   swaggerDefinition: {
-    openApi: '3.0.0',
+    openapi: '3.0.1',
     info: {
       title: 'Recipes API',
       version: '1.0.0',
@@ -30,14 +30,6 @@ const swaggerOptions = {
     },
     produces: ['application/json'],
     consumes: ['application/json'],
-    securityDefinitions: {
-      JWT: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'Authorization',
-        description: 'Bearer token',
-      },
-    },
     tags: [
       {
         name: 'Users',
@@ -49,9 +41,20 @@ const swaggerOptions = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        basicAuth: {
+          type: 'http',
+          scheme: 'basic',
+        },
+      },
       schemas: {
-        User: m2s(User),
-        Recipe: m2s(Recipe),
+        User: { ...m2s(User), ...{ properties: { ...m2s(User).properties, __v: { type: 'number' } } } },
+        Recipe: { ...m2s(Recipe), ...{ properties: { ...m2s(Recipe).properties, __v: { type: 'number' } } } },
         UserBasicData: {
           type: 'object',
           properties: {

@@ -19,21 +19,20 @@ interface MongoError {
 export class UserController {
   public async register(req: Express.Request, res: Express.Response) {
     const { username, password } = <RegisterDto>matchedData(req);
-    if (password && username) {
-      const hashed = await bcrypt.hash(password, 10);
-      try {
-        const user = await userService.createUser(username, hashed);
-        return res.status(201).send(user);
-      } catch (err: MongoError | unknown) {
-        if ((<MongoError>err).code === 11000) {
-          return res.status(StatusCodes.BAD_REQUEST).send('User already exists');
-        } else {
-          console.log(err);
-          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
-        }
-      }
-    } else {
+    if (!password || !username) {
       return res.status(StatusCodes.BAD_REQUEST).send('Missing username or password');
+    }
+    try {
+      const hashed = await bcrypt.hash(password, 10);
+      const user = await userService.createUser(username, hashed);
+      return res.status(201).send(user);
+    } catch (err: MongoError | unknown) {
+      if ((<MongoError>err).code === 11000) {
+        return res.status(StatusCodes.BAD_REQUEST).send('User already exists');
+      } else {
+        console.log(err);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
